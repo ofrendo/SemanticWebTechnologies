@@ -1,7 +1,0 @@
-127.0.0.1 - - [14/Nov/2016:19:11:56 +0100] "GET / HTTP/1.1" 400 673 "-" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36"
-127.0.0.1 - - [14/Nov/2016:19:12:47 +0100] "GET / HTTP/1.1" 400 673 "-" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36"
-127.0.0.1 - - [14/Nov/2016:19:13:16 +0100] "GET / HTTP/1.1" 200 38 "-" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36"
-127.0.0.1 - - [14/Nov/2016:19:13:16 +0100] "GET /favicon.ico HTTP/1.1" 404 327 "https://localhost/" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36"
-127.0.0.1 - - [14/Nov/2016:19:13:20 +0100] "GET / HTTP/1.1" 200 38 "-" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36"
-127.0.0.1 - - [14/Nov/2016:19:13:44 +0100] "POST /RetrieveTriples HTTP/1.1" 200 1335 "-" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36"
-127.0.0.1 - - [14/Nov/2016:19:15:09 +0100] "GET / HTTP/1.1" 200 38 "https://www.google.de/" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36"
