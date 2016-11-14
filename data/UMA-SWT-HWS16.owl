@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://webprotege.stanford.edu/project/9t47rtfZcTIIGo5wGIQ6YB#"
+     xml:base="http://webprotege.stanford.edu/project/9t47rtfZcTIIGo5wGIQ6YB"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://webprotege.stanford.edu/project/9t47rtfZcTIIGo5wGIQ6YB"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+	<!-- depiction -->
+    <owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/depiction">
+        <rdfs:label>depiction</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Person"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Location"/>
+		<owl:equivalentProperty rdf:resource="http://xmlns.com/foaf/0.1/depiction"/>
+    </owl:ObjectProperty> 
+	
+	<!-- isPrimaryTopicOf -->
+	<owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/isPrimaryTopicOf">
+        <rdfs:label>isPrimaryTopicOf</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Person"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Location"/>
+		<owl:equivalentProperty rdf:resource="http://xmlns.com/foaf/0.1/isPrimaryTopicOf"/>
+    </owl:ObjectProperty> 
+	
+	<!-- homepage -->
+    <owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/homepage">
+        <rdfs:label>homepage</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Person"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Location"/>
+		<owl:equivalentProperty rdf:resource="http://xmlns.com/foaf/0.1/homepage"/>
+		<owl:equivalentProperty rdf:resource="http://dbpedia.org/property/homepage"/>
+		<owl:equivalentProperty rdf:resource="http://dbpedia.org/property/website"/>
+    </owl:ObjectProperty>
+	 
+	 
+	<!-- foundedBy -->
+    <owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/foundedBy">
+        <rdfs:label>foundedBy</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
+		<owl:equivalentProperty rdf:resource="http://dbpedia.org/ontology/foundedBy"/>
+    </owl:ObjectProperty>
+    
+	<!--  makerOf -->
+    <owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/makerOf">
+        <rdfs:label>makerOf</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Person"/>
+		<owl:equivalentProperty rdf:resource="http://xmlns.com/foaf/0.1/made"/>
+    </owl:ObjectProperty>
+	
+	<!--  distributerOf -->
+    <owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/distributerOf">
+        <rdfs:label>distributerOf</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
+		<owl:inverseProperty rdf:resource="http://data.linkedmdb.org/resource/movie/film_distributor"/>
+    </owl:ObjectProperty>
+	
+	
+	
+	
+	
+	  <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+	<!-- Organisation -->
+    <owl:Class rdf:about="http://webprotege.stanford.edu/Organisation">
+        <rdfs:label>Organisation</rdfs:label>
+        <owl:equivalentClass rdf:resource="http://dbpedia.org/ontology/Organisation"/>
+		<owl:equivalentClass rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
+		<owl:equivalentClass rdf:resource="http://schema.org/Organization"/>
+		<owl:equivalentClass rdf:resource="http://data.linkedmdb.org/resource/movie/film_distributor"/>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+	
+	<!-- Person -->
+    <owl:Class rdf:about="http://webprotege.stanford.edu/Person">
+        <rdfs:label>Person</rdfs:label>
+        <owl:equivalentClass rdf:resource="http://dbpedia.org/ontology/Person"/>
+		<owl:equivalentClass rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+		<owl:equivalentClass rdf:resource="http://schema.org/Person"/>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+	
+	<!-- Location -->
+    <owl:Class rdf:about="http://webprotege.stanford.edu/Location">
+        <rdfs:label>Location</rdfs:label>
+        <owl:equivalentClass rdf:resource="http://dbpedia.org/ontology/Location"/>	
+		<owl:equivalentClass rdf:resource="http://schema.org/Place"/>
+		<owl:equivalentClass rdf:resource="http://data.linkedmdb.org/resource/movie/film_location"/>		
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:Class>
+	
+	
+	
+</rdf:RDF>
+
+
+
+
