@@ -139,6 +139,9 @@ public class NamedEntity {
 	  
 	  
 	  public enum EntityType {
-		    PERSON, ORGANIZATION, LOCATION 
+		    PERSON, 
+		    ORGANIZATION, 
+		    LOCATION
+		    //, DATE
 		}
 }

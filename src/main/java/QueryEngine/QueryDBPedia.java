@@ -41,6 +41,9 @@ public class QueryDBPedia {
 		case LOCATION:
 			type = "<http://dbpedia.org/ontology/Location>";
 			break;
+		/*case DATE: 
+			type = "<http://dbpedia.org/ontology/date";
+			break;*/
 		}		
 
 		// 2) DESCRIBE Clause
@@ -86,7 +89,7 @@ public class QueryDBPedia {
 			System.out.println("Queried DBPedia for "+ et + ": " + entities + ", size: " + model.size());
 		} catch (Exception e2) {
 			System.out.println("Query for DBPedia failed: " + e2.getMessage());
-			System.out.println(q);
+			System.out.println(queryString);
 		} finally {
 			qe.close() ;
 		}			

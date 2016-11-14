@@ -16,6 +16,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
 import main.java.NEREngine.NamedEntity;
 import main.java.NEREngine.NamedEntity.EntityType;
@@ -120,14 +121,16 @@ public class QuerySource {
 		//System.out.println(q);
 		
 		QueryExecution qe = QueryExecutionFactory.sparqlService(endpoint, q);
+		QueryEngineHTTP qeHttp = (QueryEngineHTTP) qe;
+		qeHttp.setModelContentType("application/rdf+xml");
 		try {
 			model = qe.execDescribe();
 			System.out.println("Queried "+ source +" for: " + entities + ", size: " + model.size() + "; time: " + TimeUnit.NANOSECONDS.toMillis(System.nanoTime()-start) + "ms");
 		} catch (Exception e2) {
 			System.out.println("Query for "+ source +" failed: " + e2.getMessage());
-			System.out.println(q);
+			System.out.println(queryString);
 		} finally {
-			qe.close() ;
+			qe.close();
 		}
 		
 		//---------------- Query labels for subjects, predicates and objects ------------------

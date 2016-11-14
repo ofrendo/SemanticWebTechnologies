@@ -1,7 +1,9 @@
 # SemanticWebTechnologies
 Report for our 3rd semester SWT project
 
-## API call
+## Installation instructions for the Chrome extension
+
+## Server
 Bodies are in JSON.
 
 Get triples for a text
@@ -9,9 +11,7 @@ Get triples for a text
 POST https://semantic-web-technologies.herokuapp.com/RetrieveTriples
 
 Request body:
-{
-	text: "This is a test to identify SAP in Walldorf with H. Plattner as founder."
-}
+This is a test to identify SAP in Walldorf with H. Plattner as founder.
 
 Response body: 
 [

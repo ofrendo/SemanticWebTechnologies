@@ -1,0 +1,7 @@
+#swtDivSearch {
+	position: fixed;
+	right: 5px;
+	top: 5px;
+	z-index: 999;
+	padding: 5px;
+}

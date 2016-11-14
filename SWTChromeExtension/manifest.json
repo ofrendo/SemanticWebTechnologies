@@ -14,8 +14,11 @@
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
-			"css": [],
-			"js": ["js/jquery-3.1.1.min.js", "js/swt_background.js"]
+			"css": ["css/style.css"],
+			"js": ["js/jquery-3.1.1.min.js", 
+				   "js/swt_config.js",
+				   "js/swt_connector.js",
+				   "js/swt_background.js"]
 		}
 	],
 

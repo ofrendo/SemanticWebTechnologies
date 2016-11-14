@@ -19,7 +19,9 @@ import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.*;
+import org.apache.jena.rdf.model.InfModel;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.reasoner.ReasonerRegistry;
 import org.apache.jena.util.FileManager;
 
@@ -660,8 +662,13 @@ public class JenaEngine implements QueryEngine {
 		String text = "";
 		
 		// 1st simple test with all entity types
-		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
-			runtest(text,null);
+		//text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
+		
+		// This text takes too long - need limit of stuff somewhere
+		//text = "The Kremlin revealed Mr Trump and Mr Putin had discussed Syria and agreed that current Russian-US relations were \"extremely unsatisfactory\"";
+		
+		text = "Mr Putin and Mr Trump agreed to stay in touch by phone, and arrange to meet in person at a later date, the Kremlin added.";
+		runtest(text,null);
 		
 		// 2nd TEST (just hit the cache)
 		//text = "Just testing how caching works for H. Plattner from Walldorf.";

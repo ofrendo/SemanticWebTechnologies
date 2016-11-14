@@ -3,7 +3,12 @@
  */
 package main.java.NEREngine;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
@@ -13,10 +18,6 @@ import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
-import main.java.NEREngine.NamedEntity.EntityType;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Sascha Ulbrich
@@ -128,6 +129,10 @@ public class CoreNLPEngine implements NEREngine {
 	    else if (inKey.equals("LOCATION")) {
 	    	et = NamedEntity.EntityType.LOCATION;
 	    }
+	    else {
+	    	// Can also be "DATE"
+	    	return;
+	    }
 	    
 	    NamedEntity ne = new NamedEntity(inSb.toString(), et);
 	    if(!inTokens.contains(ne)){
@@ -163,8 +168,9 @@ public class CoreNLPEngine implements NEREngine {
 	 */
 	public static void main(String[] args) {
 		NEREngine e = CoreNLPEngine.getInstance();
-		String text = "This is a test to identify SAP in Walldorf with H. Plattner as founder. What happens with a duplicate of H. Plattner?";
-	
+		//String text = "This is a test to identify SAP in Walldorf with H. Plattner as founder. What happens with a duplicate of H. Plattner?";
+		String text = "The Kremlin revealed Mr Trump and Mr Putin had discussed Syria and agreed that current Russian-US relations were \"extremely unsatisfactory\".";
+		
 		for (NamedEntity entity : e.getEntitiesFromText(text)) {
 	        System.out.println(entity.getType() + ": " + entity.getName());
 		}
