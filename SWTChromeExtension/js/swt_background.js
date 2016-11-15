@@ -8,10 +8,11 @@
 
 	function init() {
 		log("Initializing...");
-		addStaticElements();
+		addFixedElements();
+		addPopup();
 	}
 
-	function addStaticElements() {
+	function addFixedElements() {
 		var divContainer = document.createElement("div");
 		divContainer.id = "swtDivSearch";
 
@@ -25,12 +26,108 @@
 		document.querySelector("body").appendChild(divContainer);
 	}
 
+	function addPopup() {
+		var divOverlay = document.createElement("div");
+		divOverlay.id = "swtDivOverlay";
+		divOverlay.classList.add("swtHidden");
+
+		var divContainer = document.createElement("div");
+		divContainer.id = "swtDivPopup";
+		divContainer.classList.add("swtHidden");
+
+		var header = document.createElement("h3");
+		header.innerHTML = "SelectedText";
+		header.id = "swtDivPopupHeader";
+		divContainer.appendChild(header);
+
+		var divEntityContainer = document.createElement("div");
+		divEntityContainer.id = "swtDivEntityContainer";
+		divContainer.appendChild(divEntityContainer);
+
+		var buttonClose = document.createElement("button");
+		buttonClose.id = "swtButtonClosePopup";
+		buttonClose.innerHTML = "X";
+		buttonClose.addEventListener("click", onPopupClose);
+		divContainer.appendChild(buttonClose);
+
+		document.querySelector("body").appendChild(divOverlay);
+		document.querySelector("body").appendChild(divContainer);
+	}
+	function onPopupShow() {
+		var divContainer = document.getElementById("swtDivPopup");
+		divContainer.classList.remove("swtHidden");
+		var divOverlay = document.getElementById("swtDivOverlay");
+		divOverlay.classList.remove("swtHidden");
+	}
+	function onPopupClose() {
+		var divContainer = document.getElementById("swtDivPopup");
+		divContainer.classList.add("swtHidden");
+		var divOverlay = document.getElementById("swtDivOverlay");
+		divOverlay.classList.add("swtHidden");
+	}
+
+	function setPopupContents(selectedText, entities) {
+		var divEntityContainer = document.getElementById("swtDivEntityContainer");
+		document.getElementById("swtDivPopupHeader").innerHTML = "Entity search: " + selectedText;
+		for (var i=0;i<entities.length;i++) {
+			divEntityContainer.appendChild(createEntity(entities[i]));
+		}
+	}
+
+	function createEntity(entity) {
+		var divContainer = document.createElement("div");
+		var a = document.createElement("a");
+		a.href = entity.URI;
+		a.innerHTML = entity.entityName + ": " + entity.entityType;
+		divContainer.appendChild(a);
+
+		var depictionSrc;
+		var ul = document.createElement("ul");
+		for (var i=0; i<entity.properties.length;i++) {
+			for (var j=0;j<entity.properties[i].value.length;j++) {
+
+				var propertyName = entity.properties[i].name; 
+				if (CONFIG.PROPERTY_LABEL_MAPPING[propertyName]) {
+					propertyName = CONFIG.PROPERTY_LABEL_MAPPING[propertyName];
+				}
+
+				var val = entity.properties[i].value[j];
+
+				// "depiction" is special case
+				if (propertyName === "depiction") {
+					depictionSrc = val;
+				}
+				else {
+					var li = document.createElement("li");
+					li.innerHTML = propertyName + ": <a href='" + val + "'>" + val + "</a>";
+					ul.appendChild(li);
+				}
+			}
+		}
+
+		if (depictionSrc) {
+			divContainer.appendChild(document.createElement("br"));
+
+			var img = document.createElement("img");
+			img.classList.add("swtDepiction");
+			img.src = depictionSrc;
+			divContainer.appendChild(img);
+		}
+
+		divContainer.appendChild(ul);
+
+		return divContainer;
+ 	}
+
 	function onSearch() {
-		var selectedText = getSelectedText();
+		//var selectedText = getSelectedText();
+		var selectedText = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";		
 		if (selectedText.length > 0) {
 			log("Retrieving entities...");
-			Connector.retrieveTriples(selectedText, function(response) {
-				console.log(response);
+			Connector.retrieveTriples(selectedText, function(data) {
+				console.log(data);
+				setPopupContents(selectedText, data);
+				onPopupShow();
 			});
 		}
 		

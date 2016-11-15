@@ -5,3 +5,48 @@
 	z-index: 999;
 	padding: 5px;
 }
+
+#swtDivOverlay {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	z-index: 998;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,0.5);
+}
+
+#swtDivPopup {
+	position: fixed;
+	top: 20px;
+	z-index: 999;
+	width: 60%;
+	height: 900px;
+	left: 20%;
+	background-color: white;
+	padding: 5px;
+	overflow-y: auto;
+}
+#swtDivPopup > h3 {
+
+}
+#swtDivEntityContainer {
+
+}
+
+.swtDepiction {
+	width: 200px;
+	height: 200px;
+}
+
+
+#swtButtonClosePopup {
+	position: absolute;
+	right: 5px;
+	top: 5px;
+}
+
+
+.swtHidden {
+	display: none;
+}
