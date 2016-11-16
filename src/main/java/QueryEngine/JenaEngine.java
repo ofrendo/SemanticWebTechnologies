@@ -685,18 +685,24 @@ public class JenaEngine implements QueryEngine {
 		String text = "";
 		
 //		 1st simple test with all entity types
-		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
-		runtest(text,null);
+//		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
+//		runtest(text,null);
 		
 		// This text takes too long - need limit of stuff somewhere
-		//text = "The Kremlin revealed Mr Trump and Mr Putin had discussed Syria and agreed that current Russian-US relations were \"extremely unsatisfactory\"";
+		text = "The Kremlin revealed Mr Trump and Mr Putin had discussed Syria and agreed that current Russian-US relations were \"extremely unsatisfactory\"";
+		runtest(text,null);
 		
 //		text = "Mr Putin and Mr Trump agreed to stay in touch by phone, and arrange to meet in person at a later date, the Kremlin added.";
 //		runtest(text,null);
 		
-//		text = "Russia's main anti-corruption body, the Investigative Committee (SK), said he received a payment of $2m (£1.6m).";
+//		text = "Germany is a country.";
 //		runtest(text,null);
-//		
+//		text = "Russia is a country as well.";
+//		runtest(text,null);
+		
+//		text = "Russia is a country having a lot relations to Germany or even Syria.";
+//		runtest(text,null);
+		
 		// 2nd TEST (just hit the cache)
 		//text = "Just testing how caching works for H. Plattner from Walldorf.";
 		//runtest(text,null);
