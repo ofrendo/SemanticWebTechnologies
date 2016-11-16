@@ -12,16 +12,18 @@ public class BackgroundSourceQueryHandler extends Thread {
 	private EntityType et;
 	private List<NamedEntity> entities;
 	private Model m;
+	private List<String> properties;
 //	private List<String> cacheRef;
 //	private String filter;
 
 
-	public BackgroundSourceQueryHandler(ThreadGroup group, QuerySource.Source s, EntityType et ,List<NamedEntity> entities){
-		super(group,(et + "_" + entities));
+	public BackgroundSourceQueryHandler(ThreadGroup group, QuerySource.Source s, EntityType et ,List<NamedEntity> entities, List<String> properties){
+		super(group,(s + "_" + entities));
 		this.s = s;
 		this.et = et;
 		this.entities = entities;		
 		this.m = null;
+		this.properties = properties;
 	}
 
 	
@@ -33,7 +35,11 @@ public class BackgroundSourceQueryHandler extends Thread {
 //		default:
 //			break;
 //		}
-		m = new QuerySource(s, et, entities).getModel();
+		if(et == null){
+			m = new QuerySource(s, entities, properties).getModel();
+		}else{
+			m = new QuerySource(s, et, entities).getModel();
+		}
 		
 	}
 	

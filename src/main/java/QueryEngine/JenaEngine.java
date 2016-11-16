@@ -5,7 +5,6 @@ package main.java.QueryEngine;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map.Entry;
@@ -166,21 +165,23 @@ public class JenaEngine implements QueryEngine {
 	}
 
 	private void handleParallelSourceQueries() {
-		//Initialize HashMaps
-		HashMap<EntityType, List<NamedEntity>> queryEntities = new HashMap<EntityType, List<NamedEntity>> ();
-		for (EntityType et : EntityType.values()) {
-			queryEntities.put(et,new ArrayList<NamedEntity>());
-		}
 		
-		//Determine which entities to query per entity type				
-		for (NamedEntity entity : entities) {
-			if(!inCache.contains(entity) && !queryEntities.get(entity.getType()).contains(entity)){
-				//Has to be add to query
-				queryEntities.get(entity.getType()).add(entity);
-			}else{
-				System.out.println("Found in cache: " + entity.getType() + " " + entity.getName());
-			}			
-		}		
+		//TODO: Reimplement Caching
+		//Initialize HashMaps
+//		HashMap<EntityType, List<NamedEntity>> queryEntities = new HashMap<EntityType, List<NamedEntity>> ();
+//		for (EntityType et : EntityType.values()) {
+//			queryEntities.put(et,new ArrayList<NamedEntity>());
+//		}
+//		
+//		//Determine which entities to query per entity type				
+//		for (NamedEntity entity : entities) {
+//			if(!inCache.contains(entity) && !queryEntities.get(entity.getType()).contains(entity)){
+//				//Has to be add to query
+//				queryEntities.get(entity.getType()).add(entity);
+//			}else{
+//				System.out.println("Found in cache: " + entity.getType() + " " + entity.getName());
+//			}			
+//		}		
 		
 		
 		//Query sources in parallel per entity type if requested
@@ -188,15 +189,20 @@ public class JenaEngine implements QueryEngine {
 		System.out.println("Start load from sources...");
 		Long start = System.nanoTime();
 		ThreadGroup group = new ThreadGroup( entities.toString() );
-		for (EntityType et : queryEntities.keySet()) {
-			if(!queryEntities.get(et).isEmpty()){
-	
-				//DBPedia
-				new BackgroundSourceQueryHandler(group, QuerySource.Source.DBPedia, et, queryEntities.get(et)).start();
-				//LinkedMDB
-				//new BackgroundSourceQueryHandler(group, QuerySource.Source.LinkedMDB, et, queryEntities.get(et)).start();
-			}
-		}
+//		for (EntityType et : queryEntities.keySet()) {
+//			if(!queryEntities.get(et).isEmpty()){
+//	
+//				//DBPedia
+//				new BackgroundSourceQueryHandler(group, QuerySource.Source.DBPedia, et, queryEntities.get(et)).start();
+//				//LinkedMDB
+//				//new BackgroundSourceQueryHandler(group, QuerySource.Source.LinkedMDB, et, queryEntities.get(et)).start();
+//			}
+//		}
+		
+		//DBPedia
+		new BackgroundSourceQueryHandler(group, QuerySource.Source.DBPedia, null, entities, getQueryProperties()).start();
+		//LinkedMDB
+		//new BackgroundSourceQueryHandler(group, QuerySource.Source.LinkedMDB, et, queryEntities.get(et)).start();		
 		
 		//Wait till all are finished and derive model
 		Model resModel;
@@ -219,6 +225,23 @@ public class JenaEngine implements QueryEngine {
 			System.out.println(e.getMessage());
 		}
 		System.out.println("Load of Sources finished. Model size: " + model.size()+ "; Time: " + TimeUnit.NANOSECONDS.toMillis(System.nanoTime()-start) + "ms");
+	}
+	
+	private List<String> getQueryProperties(){
+		
+		List<String> props = new ArrayList<String>();
+		
+		Query query = QueryFactory.create(" SELECT ?p WHERE { ?a <http://www.w3.org/2002/07/owl#equivalentProperty> ?p. }"); 
+		QueryExecution qe = QueryExecutionFactory.create(query, ontoModel); 
+		ResultSet results = qe.execSelect(); 
+		
+		while(results.hasNext()) {  
+			QuerySolution sol = results.next();  
+			props.add(sol.get("p").toString());
+		}			
+		qe.close();
+		
+		return props;
 	}
 
 	private void handleLocalQueries() {
@@ -656,20 +679,24 @@ public class JenaEngine implements QueryEngine {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
-		//  ---- End-to-End Test
-		JenaEngine je = new JenaEngine();
+
+		//  ---- End-to-End Test		
+//		JenaEngine je = new JenaEngine();
 		String text = "";
 		
-		// 1st simple test with all entity types
-		//text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
+//		 1st simple test with all entity types
+		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
+		runtest(text,null);
 		
 		// This text takes too long - need limit of stuff somewhere
 		//text = "The Kremlin revealed Mr Trump and Mr Putin had discussed Syria and agreed that current Russian-US relations were \"extremely unsatisfactory\"";
 		
-		text = "Mr Putin and Mr Trump agreed to stay in touch by phone, and arrange to meet in person at a later date, the Kremlin added.";
-		runtest(text,null);
+//		text = "Mr Putin and Mr Trump agreed to stay in touch by phone, and arrange to meet in person at a later date, the Kremlin added.";
+//		runtest(text,null);
 		
+//		text = "Russia's main anti-corruption body, the Investigative Committee (SK), said he received a payment of $2m (£1.6m).";
+//		runtest(text,null);
+//		
 		// 2nd TEST (just hit the cache)
 		//text = "Just testing how caching works for H. Plattner from Walldorf.";
 		//runtest(text,null);
