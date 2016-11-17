@@ -177,12 +177,12 @@ public class QuerySource {
 							}						
 							//Select at least top 5 scored URIs - but accept only -10% from top Score 
 							int cnt = 0;
-							Double min_score = score_uris.descendingKeySet().first() * 0.6;
+							Double min_score = score_uris.descendingKeySet().first() * 0.5;
 							for (Double key : score_uris.descendingKeySet()) {
 								if(key < min_score)
 									break;
 								uris.addAll(score_uris.get(key));
-								System.out.println(key + ": " + score_uris.get(key));
+								System.out.println(source + ": Score for " + ne.getCacheRef() + " of " + score_uris.get(key)+ ": " + key);
 								cnt += score_uris.get(key).size();
 								if(cnt >= 5)
 									break;
@@ -191,7 +191,7 @@ public class QuerySource {
 						//URI candidate determination done -> store in cache and candidate list						
 						uriCache.put(ne.getCacheRef(), uris);
 						uri_candidates.addAll(uris);
-						System.out.println(source + ": Queried " + uris.size() + " URI candidates for " + ne.getCacheRef() + ".");
+						System.out.println(source + ": Retrieved " + uris.size() + " URI candidates for " + ne.getCacheRef() + ".");
 					}					
 				}
 			} catch (InterruptedException e) {
@@ -200,7 +200,7 @@ public class QuerySource {
 		}
 
 		Long stop = System.nanoTime();
-		System.out.println(source + ": Queried " + uri_candidates.size() + " URI candidates in total. Time: " + TimeUnit.NANOSECONDS.toMillis(stop-start) + "ms");
+		System.out.println(source + ": Retrieved " + uri_candidates.size() + " URI candidates in total. Time: " + TimeUnit.NANOSECONDS.toMillis(stop-start) + "ms");
 		start = stop;
 		
 		
@@ -299,7 +299,7 @@ public class QuerySource {
 		try {
 			q = QueryFactory.create(queryString);
 		} catch (QueryParseException qexc) {
-			System.out.println(source + " query generation failed! Query string:");
+			System.out.println("ERROR - " + source + " query generation failed! Query string:");
 			System.out.println(queryString);
 			System.out.println(qexc.getMessage());
 			return m;
@@ -312,7 +312,7 @@ public class QuerySource {
 		try {
 			m = qe.execConstruct();
 		} catch (Exception exc) {
-			System.out.println(source + ": Query failed: " + exc.getMessage());
+			System.out.println("ERROR - " + source + ": Query failed: " + exc.getMessage());
 			System.out.println(queryString);
 		} finally {
 			qe.close();
