@@ -21,22 +21,47 @@
 	top: 20px;
 	z-index: 999;
 	width: 60%;
+	min-width: 720px;
 	height: 900px;
 	left: 20%;
 	background-color: white;
 	padding: 5px;
 	overflow-y: auto;
+	font-family: verdana, arial, helvetica, sans-serif;
 }
 #swtDivPopup > h3 {
 
 }
-#swtDivEntityContainer {
 
+#swtDivEntityContainer > div {
+	/* Each entity has one of these divs */
+	margin: ;
+	clear: both;
+}
+#swtDivEntityContainer > div > a { 
+	/* Entity headers "SAP: ORGANIZATION" */
+	float: left;
+	clear: both;
+}
+.swtDivEntityContent {
+	float: left;
+	width: 100%;
+	margin-bottom: 30px;
+}
+#swtDivPopup ul {
+	margin: 0;
+	padding: 5px;
+	float: left;
+	width: 70%;
+}
+#swtDivPopup li {
+	list-style: disc !important;
 }
 
 .swtDepiction {
-	width: 200px;
-	height: 200px;
+	width: 25%;
+	/* height: 200px; */
+	float: right;
 }
 
 
@@ -49,4 +74,33 @@
 
 .swtHidden {
 	display: none;
+}
+
+
+/* Visualization */
+#swtSVGVisualization {
+	/*width: 100%;
+	height: 500px; */
+	float: left;
+	display: block;
+	/*background-color: red;*/
+	border: 1px solid black;
+}
+
+/*circle {
+	display: block;
+}*/
+
+.links line {
+  stroke: #999;
+  stroke-opacity: 0.6;
+}
+
+.nodes circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.texts text {
+	font-size: 9px;
 }

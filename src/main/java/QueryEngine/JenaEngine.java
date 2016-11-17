@@ -689,11 +689,11 @@ public class JenaEngine implements QueryEngine {
 //		runtest(text,null);
 		
 		// This text takes too long - need limit of stuff somewhere
-		text = "The Kremlin revealed Mr Trump and Mr Putin had discussed Syria and agreed that current Russian-US relations were \"extremely unsatisfactory\"";
-		runtest(text,null);
+		//text = "The Kremlin revealed Mr Trump and Mr Putin had discussed Syria and agreed that current Russian-US relations were \"extremely unsatisfactory\"";
+		//runtest(text,null);
 		
-//		text = "Mr Putin and Mr Trump agreed to stay in touch by phone, and arrange to meet in person at a later date, the Kremlin added.";
-//		runtest(text,null);
+		text = "Mr Putin and Mr Trump agreed to stay in touch by phone in Russia, and arrange to meet in person at a later date, the Kremlin added.";
+		runtest(text,null);
 		
 //		text = "Germany is a country.";
 //		runtest(text,null);

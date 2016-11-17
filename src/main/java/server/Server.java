@@ -32,11 +32,21 @@ public class Server {
 			System.out.println(e);	
 			//System.out.println(e.toJSONString());
 		}
+		String entitiesJSON = getEntitiesJSON(results);
 		
-		return getJSONArray(results);
+		// 3) Retrieve context triples
+		List<String[]> contextTriples = je.getContextTriples();
+		String contextTriplesJSON = getContextTriplesJSON(contextTriples);
+		
+		// 4) Build result
+		String result = "{\"entities\": " + entitiesJSON + ",\n" +
+					     "\"contextTriples\": " + contextTriplesJSON + "\n}";
+		
+		
+		return result;
 	}
 	
-	private static String getJSONArray(List<NamedEntity> entities) {
+	private static String getEntitiesJSON(List<NamedEntity> entities) {
 		String result = "[";
 		for (NamedEntity e : entities) {
 			result += e.toJSONString() + ",";
@@ -45,6 +55,21 @@ public class Server {
 			result = result.substring(0, result.length()-1); //remove last ,
 		}
 		
+		result += "]";
+		return result;
+	}
+	
+	private static String getContextTriplesJSON(List<String[]> contextTriples) {
+		String result = "[\n";
+		for (String[] triple : contextTriples) {
+			result += "{\n";
+			result += "  \"subject\": \"" + triple[0] + "\",\n";
+			result += "  \"predicate\": \"" + triple[1] + "\",\n";
+			result += "  \"object\": \"" + triple[2] + "\"\n";
+			result += "},";
+		}
+		if (contextTriples.size() > 0)
+			result = result.substring(0, result.length() -1); //Remove last comma
 		result += "]";
 		return result;
 	}

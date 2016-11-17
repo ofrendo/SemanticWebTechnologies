@@ -44,6 +44,13 @@
 		divEntityContainer.id = "swtDivEntityContainer";
 		divContainer.appendChild(divEntityContainer);
 
+		//var svgVisualization = document.createElement("svg");
+		var svgVisualization = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		svgVisualization.setAttribute("width", 700);
+		svgVisualization.setAttribute("height", 500);
+		svgVisualization.id = "swtSVGVisualization";
+		divContainer.appendChild(svgVisualization);
+
 		var buttonClose = document.createElement("button");
 		buttonClose.id = "swtButtonClosePopup";
 		buttonClose.innerHTML = "X";
@@ -66,12 +73,14 @@
 		divOverlay.classList.add("swtHidden");
 	}
 
-	function setPopupContents(selectedText, entities) {
+	function setPopupContents(selectedText, data) {
 		var divEntityContainer = document.getElementById("swtDivEntityContainer");
+		divEntityContainer.innerHTML = "";
 		document.getElementById("swtDivPopupHeader").innerHTML = "Entity search: " + selectedText;
-		for (var i=0;i<entities.length;i++) {
-			divEntityContainer.appendChild(createEntity(entities[i]));
+		for (var i=0;i<data.entities.length;i++) {
+			divEntityContainer.appendChild(createEntity(data.entities[i]));
 		}
+		createVisualization(data.contextTriples);
 	}
 
 	function createEntity(entity) {
@@ -81,6 +90,8 @@
 		a.innerHTML = entity.entityName + ": " + entity.entityType;
 		divContainer.appendChild(a);
 
+		var divContent = document.createElement("div");
+		divContent.classList.add("swtDivEntityContent");
 		var depictionSrc;
 		var ul = document.createElement("ul");
 		for (var i=0; i<entity.properties.length;i++) {
@@ -105,18 +116,24 @@
 			}
 		}
 
+		divContent.appendChild(ul);
+
 		if (depictionSrc) {
-			divContainer.appendChild(document.createElement("br"));
+			//divContainer.appendChild(document.createElement("br"));
 
 			var img = document.createElement("img");
 			img.classList.add("swtDepiction");
 			img.src = depictionSrc;
-			divContainer.appendChild(img);
+			divContent.appendChild(img);
 		}
 
-		divContainer.appendChild(ul);
+		divContainer.appendChild(divContent);
 
 		return divContainer;
+ 	}
+
+ 	function createVisualization(contextTriples) {
+ 		SWT_Visualizer.createVisualization(contextTriples);
  	}
 
 	function onSearch() {
