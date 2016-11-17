@@ -282,14 +282,25 @@ public class QuerySource {
 		// Per NamedEntity: Query for URI candidates
 		ThreadGroup group = new ThreadGroup( String.valueOf(entities.toString().hashCode()));
 		for (NamedEntity ne : entities) {
-			queryString = "SELECT DISTINCT ?s ?label (COUNT(?p) AS ?count) WHERE {"
-					+ " ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " + determineEntityTypeURI(source, ne.getType()) + "."
-					+ " ?s <http://www.w3.org/2000/01/rdf-schema#label>  ?l."
-					+ " ?s ?p ?o."
-					+ " FILTER (LANGMATCHES(LANG(?l), 'en') && isURI(?s) && regex(?l,'" + ne.getRegexName() + "') )"
-					+ " BIND (STR(?l) as ?label)"// BIND (COUNT(?p) as ?count)"
-					+ " } GROUP BY ?s ?label"
-					; 
+			if(source == Source.LinkedMDB){ //SPARQL 1.0 //TODO: BIND causes error
+				queryString = "SELECT DISTINCT ?s ?label ?count WHERE {"
+						+ " ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " + determineEntityTypeURI(source, ne.getType()) + "."
+						+ " ?s <http://www.w3.org/2000/01/rdf-schema#label>  ?l."
+						+ " ?s ?p ?o."
+						+ " FILTER(LANGMATCHES(LANG(?l), 'en') && isURI(?s) && regex(?l,'" + ne.getRegexName() + "') )"
+						+ " BIND(STR(?l) as ?label) BIND(1 as ?count)"
+						+ " }"
+						; 
+			}else{
+				queryString = "SELECT DISTINCT ?s ?label (COUNT(?p) AS ?count) WHERE {"
+						+ " ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " + determineEntityTypeURI(source, ne.getType()) + "."
+						+ " ?s <http://www.w3.org/2000/01/rdf-schema#label>  ?l."
+						+ " ?s ?p ?o."
+						+ " FILTER (LANGMATCHES(LANG(?l), 'en') && isURI(?s) && regex(?l,'" + ne.getRegexName() + "') )"
+						+ " BIND (STR(?l) as ?label)"// BIND (COUNT(?p) as ?count)"
+						+ " } GROUP BY ?s ?label"
+						; 
+			}
 			new BackgroundQueryExecution(group, queryString, endpoint, ne).start();
 		}
 		

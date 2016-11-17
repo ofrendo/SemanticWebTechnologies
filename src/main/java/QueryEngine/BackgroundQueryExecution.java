@@ -12,6 +12,7 @@ import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QueryParseException;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.Syntax;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 
 public class BackgroundQueryExecution extends Thread {
@@ -47,8 +48,11 @@ public class BackgroundQueryExecution extends Thread {
 		List<QuerySolution> res = new ArrayList<QuerySolution>();
 		
 		Query q = null;		
-		try {
-			q = QueryFactory.create(queryString);
+		try {			
+			if(endpoint == "http://linkedmdb.org/sparql")
+				q = QueryFactory.create(queryString,Syntax.syntaxSPARQL_10);
+			else
+				q = QueryFactory.create(queryString);
 		} catch (QueryParseException qexc) {
 			System.out.println(endpoint + ": Background query generation failed! Query string:");
 			System.out.println(queryString);
