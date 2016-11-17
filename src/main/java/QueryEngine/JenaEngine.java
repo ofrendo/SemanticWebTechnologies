@@ -684,7 +684,13 @@ public class JenaEngine implements QueryEngine {
 		String text = "";
 		
 		//1st simple test with all entity types
-		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
+//		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
+//		runtest(text,null);
+		
+		text = "Mr Trump has said Japan needs to pay more to maintain US troops on its soil.";
+		runtest(text,null);
+		
+		text = "Mr Abe is stopping in New York on his way to an Asia-Pacific trade summit in Peru.";
 		runtest(text,null);
 		
 		// This text takes too long - need limit of stuff somewhere
@@ -702,15 +708,15 @@ public class JenaEngine implements QueryEngine {
 //		text = "Russia is a country having a lot relations to Germany or even Syria.";
 //		runtest(text,null);
 		
-		//2nd TEST (just hit the cache)
-		text = "Just testing how caching works for H. Plattner from Walldorf.";
-		runtest(text,null);
-		
-		// 3rd TEST (Cache and remove property)
-		text = "This is a test to identify if Walldorf is in cache but Heidelberg has to be queried";
-		QueryProperties qp = je.getAvailableProperties();				
-		qp.get(EntityType.LOCATION).remove("depiction");
-		runtest(text,qp);
+//		//2nd TEST (just hit the cache)
+//		text = "Just testing how caching works for H. Plattner from Walldorf.";
+//		runtest(text,null);
+//		
+//		// 3rd TEST (Cache and remove property)
+//		text = "This is a test to identify if Walldorf is in cache but Heidelberg has to be queried";
+//		QueryProperties qp = je.getAvailableProperties();				
+//		qp.get(EntityType.LOCATION).remove("depiction");
+//		runtest(text,qp);
 		
 		/*
 		// 4th TEST: Heikos example

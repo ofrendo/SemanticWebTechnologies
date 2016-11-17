@@ -109,7 +109,7 @@ public class QuerySource {
 			if(uriCache.containsKey(ne.getCacheRef())){
 				//Source specific cache based on NamedEntity name -> save regex queries
 				uri_candidates.addAll(uriCache.get(ne.getCacheRef()));
-				System.out.println(source + ": Found in cache: " + ne.getCacheRef());
+				System.out.println(source + ": " + ne.getCacheRef() + " found in cache. Count: " + uriCache.get(ne.getCacheRef()).size());
 			}else{
 				if(source == Source.LinkedMDB){ //SPARQL 1.0 //TODO: BIND causes error
 					queryString = "SELECT DISTINCT ?s ?label ?count WHERE {"
@@ -188,9 +188,10 @@ public class QuerySource {
 									break;
 							}							
 						}	
-						//URI candidate determination done -> store in cache and candidate list
+						//URI candidate determination done -> store in cache and candidate list						
 						uriCache.put(ne.getCacheRef(), uris);
 						uri_candidates.addAll(uris);
+						System.out.println(source + ": Queried " + uris.size() + " URI candidates for " + ne.getCacheRef() + ".");
 					}					
 				}
 			} catch (InterruptedException e) {
@@ -199,7 +200,7 @@ public class QuerySource {
 		}
 
 		Long stop = System.nanoTime();
-		System.out.println(source + ": Queried URI candidates. Count: " + uri_candidates.size() + ". Time: " + TimeUnit.NANOSECONDS.toMillis(stop-start) + "ms");
+		System.out.println(source + ": Queried " + uri_candidates.size() + " URI candidates in total. Time: " + TimeUnit.NANOSECONDS.toMillis(stop-start) + "ms");
 		start = stop;
 		
 		
