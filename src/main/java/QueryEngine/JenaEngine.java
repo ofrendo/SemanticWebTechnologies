@@ -166,7 +166,7 @@ public class JenaEngine implements QueryEngine {
 
 	private void handleParallelSourceQueries() {
 		
-		//TODO: Reimplement Caching
+		//TODO: Remove model Caching
 		//Initialize HashMaps
 //		HashMap<EntityType, List<NamedEntity>> queryEntities = new HashMap<EntityType, List<NamedEntity>> ();
 //		for (EntityType et : EntityType.values()) {
@@ -200,7 +200,7 @@ public class JenaEngine implements QueryEngine {
 //		}
 		
 		//DBPedia
-		new BackgroundSourceQueryHandler(group, QuerySource.Source.DBPedia, null, entities, getQueryProperties()).start();
+		new BackgroundSourceQueryHandler(group, QuerySource.Source.DBPedia, entities, getQueryProperties()).start();
 		//LinkedMDB
 		//new BackgroundSourceQueryHandler(group, QuerySource.Source.LinkedMDB, et, queryEntities.get(et)).start();		
 		
@@ -215,7 +215,6 @@ public class JenaEngine implements QueryEngine {
 				if(resModel != null && resModel.size() > 0){
 					model.add(resModel);
 					modelChanged = true;
-					//Update Cache: TODO: implement Source specific cache?
 					for(NamedEntity e : threads[i].getEntities()){
 						inCache.add(e);
 					}
@@ -681,19 +680,19 @@ public class JenaEngine implements QueryEngine {
 	public static void main(String[] args) {
 
 		//  ---- End-to-End Test		
-//		JenaEngine je = new JenaEngine();
+		JenaEngine je = new JenaEngine();
 		String text = "";
 		
-//		 1st simple test with all entity types
-//		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
-//		runtest(text,null);
+		//1st simple test with all entity types
+		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
+		runtest(text,null);
 		
 		// This text takes too long - need limit of stuff somewhere
 		//text = "The Kremlin revealed Mr Trump and Mr Putin had discussed Syria and agreed that current Russian-US relations were \"extremely unsatisfactory\"";
 		//runtest(text,null);
 		
-		text = "Mr Putin and Mr Trump agreed to stay in touch by phone in Russia, and arrange to meet in person at a later date, the Kremlin added.";
-		runtest(text,null);
+//		text = "Mr Putin and Mr Trump agreed to stay in touch by phone in Russia, and arrange to meet in person at a later date, the Kremlin added.";
+//		runtest(text,null);
 		
 //		text = "Germany is a country.";
 //		runtest(text,null);
@@ -703,15 +702,15 @@ public class JenaEngine implements QueryEngine {
 //		text = "Russia is a country having a lot relations to Germany or even Syria.";
 //		runtest(text,null);
 		
-		// 2nd TEST (just hit the cache)
-		//text = "Just testing how caching works for H. Plattner from Walldorf.";
-		//runtest(text,null);
+		//2nd TEST (just hit the cache)
+		text = "Just testing how caching works for H. Plattner from Walldorf.";
+		runtest(text,null);
 		
 		// 3rd TEST (Cache and remove property)
-		//text = "This is a test to identify if Walldorf is in cache but Heidelberg has to be queried";
-		//QueryProperties qp = je.getAvailableProperties();				
-		//qp.get(EntityType.LOCATION).remove("depiction");
-		//runtest(text,qp);
+		text = "This is a test to identify if Walldorf is in cache but Heidelberg has to be queried";
+		QueryProperties qp = je.getAvailableProperties();				
+		qp.get(EntityType.LOCATION).remove("depiction");
+		runtest(text,qp);
 		
 		/*
 		// 4th TEST: Heikos example

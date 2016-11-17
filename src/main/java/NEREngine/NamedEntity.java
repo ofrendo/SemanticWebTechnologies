@@ -132,6 +132,10 @@ public class NamedEntity {
 		 return this.uri;
 	  }
 	  
+	  public String getCacheRef(){
+			 return this.type + "_" + this.name;
+		  }
+	  
 	  public HashMap<String,HashMap<String, Integer>> getProperties(){		  
 		  //TODO copy necessary?
 		  return properties;
