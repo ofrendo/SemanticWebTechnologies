@@ -687,8 +687,8 @@ public class JenaEngine implements QueryEngine {
 //		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
 //		runtest(text,null);
 		
-		text = "Mr Trump has said Japan needs to pay more to maintain US troops on its soil.";
-		runtest(text,null);
+//		text = "Mr Trump has said Japan needs to pay more to maintain US troops on its soil.";
+//		runtest(text,null);
 		
 		text = "Mr Abe is stopping in New York on his way to an Asia-Pacific trade summit in Peru.";
 		runtest(text,null);

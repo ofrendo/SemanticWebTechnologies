@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.query.Query;
@@ -16,6 +18,7 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
+
 import main.java.NEREngine.NamedEntity;
 import main.java.NEREngine.NamedEntity.EntityType;
 
@@ -155,7 +158,7 @@ public class QuerySource {
 							//Score each URI by its label and relations
 							TreeMap<Double, List<String>> score_uris = new TreeMap<Double, List<String>>();
 							
-							//ugly, but not performant via external SPARQL: get max count of relations
+							//ugly, but not efficient via external SPARQL: get max count of relations
 							int max_cnt = 0;
 							for (QuerySolution s : res) {
 								if(s.getLiteral("count").getInt() > max_cnt)
@@ -166,7 +169,16 @@ public class QuerySource {
 							//Similariy: EditDistanc normalized to range 0-1 
 							//Realtion Score: Relation Count / Max(Relation Count) -> range 0-1
 							for (QuerySolution s : res) {
-								Double score = stringSimilarity(s.get("label").toString(),ne.getName()) * (s.getLiteral("count").getInt()/max_cnt);
+								String label = s.get("label").toString();
+								//LOCATIONs have often a region information after a comma 
+								if(ne.getType() == EntityType.LOCATION){
+								    Matcher matcher = Pattern.compile("([^,]*)(,.*)*").matcher(label);
+									if(matcher.find()){
+										label = matcher.group(1);
+//										System.out.println("Regex Gr. 1: " + label);
+									}
+								}
+								Double score = stringSimilarity(label ,ne.getName()) * (s.getLiteral("count").getDouble()/max_cnt);
 								if(score_uris.containsKey(score)){
 									score_uris.get(score).add(s.getResource("s").getURI());
 								}else{
@@ -175,9 +187,9 @@ public class QuerySource {
 									score_uris.put(score, new_list);
 								}
 							}						
-							//Select at least top 5 scored URIs - but accept only -10% from top Score 
+							//Select at least top 5 scored URIs - but accept only -25% from top score 
 							int cnt = 0;
-							Double min_score = score_uris.descendingKeySet().first() * 0.5;
+							Double min_score = score_uris.descendingKeySet().first() * 0.75;
 							for (Double key : score_uris.descendingKeySet()) {
 								if(key < min_score)
 									break;
@@ -191,7 +203,7 @@ public class QuerySource {
 						//URI candidate determination done -> store in cache and candidate list						
 						uriCache.put(ne.getCacheRef(), uris);
 						uri_candidates.addAll(uris);
-						System.out.println(source + ": Retrieved " + uris.size() + " URI candidates for " + ne.getCacheRef() + ".");
+						System.out.println(source + ": Retrieved " + uris.size() + " URI candidate(s) for " + ne.getCacheRef() + ".");
 					}					
 				}
 			} catch (InterruptedException e) {
@@ -200,7 +212,7 @@ public class QuerySource {
 		}
 
 		Long stop = System.nanoTime();
-		System.out.println(source + ": Retrieved " + uri_candidates.size() + " URI candidates in total. Time: " + TimeUnit.NANOSECONDS.toMillis(stop-start) + "ms");
+		System.out.println(source + ": Retrieved " + uri_candidates.size() + " URI candidate(s) in total. Time: " + TimeUnit.NANOSECONDS.toMillis(stop-start) + "ms");
 		start = stop;
 		
 		
@@ -327,7 +339,16 @@ public class QuerySource {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
+			String s1 = "New York";
+			String s2 = "New York";
+		    String longer = s1, shorter = s2;
+		    if (s1.length() < s2.length()) { // longer should always have greater length
+		      longer = s2; shorter = s1;
+		    }
+		    int longerLength = longer.length();
+		   // if (longerLength == 0) { return 1.0; /* both strings are zero length */ }
+
+		    System.out.println((longerLength - StringUtils.getLevenshteinDistance(longer, shorter)) / (double) longerLength); 	
 	
 	}
 }
