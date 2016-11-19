@@ -137,8 +137,9 @@
  	}
 
 	function onSearch() {
-		//var selectedText = getSelectedText();
-		var selectedText = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";		
+		var selectedText = getSelectedText();
+		var selectedText = "Michael Gove, Iain Duncan Smith and Theresa Villier are among her backers.";
+		//var selectedText = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";		
 		if (selectedText.length > 0) {
 			log("Retrieving entities...");
 			Connector.retrieveTriples(selectedText, function(data) {
