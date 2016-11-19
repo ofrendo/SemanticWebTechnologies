@@ -22,7 +22,8 @@ import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import main.java.NEREngine.NamedEntity;
 import main.java.NEREngine.NamedEntity.EntityType;
 
-public class QuerySource {
+public class QuerySource extends Thread{
+	
 	public enum Source {
 	    DBPedia, LinkedMDB
 	}
@@ -32,34 +33,56 @@ public class QuerySource {
 	private Model model;
 	private String endpoint;
 	private Source source;
+	private List<NamedEntity> entities;
+	private List<String> properties;
+	private boolean isSPARQL10; 
 	
-
+	// ############ Interface ###############
+	
 	public Model getModel(){
 		return model;
 	}
-	
-	//init and query for complete context (independent of EntityType) and requested properties
-	public QuerySource(Source s, List<NamedEntity> entities, List<String> properties){ 
-		this.source = s;
-		this.endpoint = determineEndpoint(s);
-		this.model = ModelFactory.createDefaultModel();
-		if(uriCache == null)
-			uriCache = new HashMap<String, List<String>>();
-		querySource(entities, properties);
+
+	public List<NamedEntity> getEntities(){
+		return entities;
 	}
 	
-	private String determineEndpoint(Source s) {
+	public QuerySource.Source getSource(){
+		return source;
+	}
+	
+	//init and query for complete context (independent of EntityType) and requested properties
+	public QuerySource(ThreadGroup group,Source s, List<NamedEntity> entities, List<String> properties){
+		super(group,(s + "_" + entities));
+		this.source = s;
+		this.entities = entities;
+		this.properties = properties;
+		
+		determineSourceProperties(s);
+		this.model = ModelFactory.createDefaultModel(); //Fallback: Empty Model
+		if(uriCache == null)
+			uriCache = new HashMap<String, List<String>>();
+		
+	}
+	
+	public void run(){
+		this.model = getContextModel(getURICandidates(entities));
+	}
+	
+	//######## Methods for source specific definitions ##############
+	
+	private void determineSourceProperties(Source s) {
 		//  enpoint definition
-		String ep = "";
 		switch (s){
 		case DBPedia:
-			ep = "http://dbpedia.org/sparql";
+			this.endpoint = "http://dbpedia.org/sparql";
+			this.isSPARQL10 = false;
 			break;
 		case LinkedMDB:
-			ep = "http://linkedmdb.org/sparql";
+			this.endpoint = "http://linkedmdb.org/sparql";
+			this.isSPARQL10 = true;
 			break;
 		}
-		return ep;
 	}
 	
 	private String determineEntityTypeURI(Source s, EntityType et) {
@@ -96,25 +119,24 @@ public class QuerySource {
 		return uri;
 	}
 
+	//######### Queries ##################	
 	
-	private void querySource(List<NamedEntity> entities, List<String> properties) {
-		String queryString = "";
-		List<String> parts = new ArrayList<String>();
-		
+	// ------- 1) Identify URIs based on regex search and scoring of results ------- 
+	private List<String> getURICandidates(List<NamedEntity> entities){
 		Long start = System.nanoTime();
-		
+		String queryString = "";		
 		List<String> uri_candidates = new ArrayList<String>();
 		
-		// Per NamedEntity: Query for URI candidates
+		// --- A) Per NamedEntity: Query for URI candidates ---
 		ThreadGroup group = new ThreadGroup( String.valueOf(entities.toString().hashCode()));
 		boolean runQuery = false; 
 		for (NamedEntity ne : entities) {
-			if(uriCache.containsKey(ne.getCacheRef())){
+			if(uriCache.containsKey(getCacheRef(ne))){
 				//Source specific cache based on NamedEntity name -> save regex queries
-				uri_candidates.addAll(uriCache.get(ne.getCacheRef()));
-				System.out.println(source + ": " + ne.getCacheRef() + " found in cache. Count: " + uriCache.get(ne.getCacheRef()).size());
+				uri_candidates.addAll(uriCache.get(getCacheRef(ne)));
+				System.out.println(source + ": " + ne.getCacheRef() + " found in cache. Count: " + uriCache.get(getCacheRef(ne)).size());
 			}else{
-				if(source == Source.LinkedMDB){ //SPARQL 1.0 //TODO: BIND causes error
+				if(isSPARQL10){ //SPARQL 1.0 //TODO: BIND causes error
 					queryString = "SELECT DISTINCT ?s ?label ?count WHERE {"
 							+ " ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " + determineEntityTypeURI(source, ne.getType()) + "."
 							+ " ?s <http://www.w3.org/2000/01/rdf-schema#label>  ?l."
@@ -139,6 +161,7 @@ public class QuerySource {
 			}
 		}
 		
+		// --- B) Evaluate results of queries ---
 		if(runQuery){
 			try {
 				BackgroundQueryExecution[] threads = new BackgroundQueryExecution[group.activeCount()];
@@ -148,60 +171,17 @@ public class QuerySource {
 					List<QuerySolution> res = threads[i].getSolutions();
 					NamedEntity ne = threads[i].getNamedEntity();
 					if(res != null && res.size() > 0){
+						//Results found -> if more than 5 -> extended logic						
 						List<String> uris = new ArrayList<String>();
 						if(res.size() <= 5){
 							for (QuerySolution s : res) {
 								uris.add(s.getResource("s").getURI());
 							}
 						}else{
-							//extended logic for URI candidate identification, if too many -> Score: string similarity and count of relations
-							//Score each URI by its label and relations
-							TreeMap<Double, List<String>> score_uris = new TreeMap<Double, List<String>>();
-							
-							//ugly, but not efficient via external SPARQL: get max count of relations
-							int max_cnt = 0;
-							for (QuerySolution s : res) {
-								if(s.getLiteral("count").getInt() > max_cnt)
-									max_cnt = s.getLiteral("count").getInt();
-							}
-							
-							//calc score for each uri: Similarity * Relation Score having range 0-1
-							//Similariy: EditDistanc normalized to range 0-1 
-							//Realtion Score: Relation Count / Max(Relation Count) -> range 0-1
-							for (QuerySolution s : res) {
-								String label = s.get("label").toString();
-								//LOCATIONs have often a region information after a comma 
-								if(ne.getType() == EntityType.LOCATION){
-								    Matcher matcher = Pattern.compile("([^,]*)(,.*)*").matcher(label);
-									if(matcher.find()){
-										label = matcher.group(1);
-//										System.out.println("Regex Gr. 1: " + label);
-									}
-								}
-								Double score = stringSimilarity(label ,ne.getName()) * (s.getLiteral("count").getDouble()/max_cnt);
-								if(score_uris.containsKey(score)){
-									score_uris.get(score).add(s.getResource("s").getURI());
-								}else{
-									List<String> new_list = new ArrayList<String>();
-									new_list.add(s.getResource("s").getURI());
-									score_uris.put(score, new_list);
-								}
-							}						
-							//Select at least top 5 scored URIs - but accept only -25% from top score 
-							int cnt = 0;
-							Double min_score = score_uris.descendingKeySet().first() * 0.75;
-							for (Double key : score_uris.descendingKeySet()) {
-								if(key < min_score)
-									break;
-								uris.addAll(score_uris.get(key));
-								System.out.println(source + ": Score for " + ne.getCacheRef() + " of " + score_uris.get(key)+ ": " + key);
-								cnt += score_uris.get(key).size();
-								if(cnt >= 5)
-									break;
-							}							
+							uris.addAll(findMostRelevantURIs(res, ne));						
 						}	
 						//URI candidate determination done -> store in cache and candidate list						
-						uriCache.put(ne.getCacheRef(), uris);
+						uriCache.put(getCacheRef(ne), uris);
 						uri_candidates.addAll(uris);
 						System.out.println(source + ": Retrieved " + uris.size() + " URI candidate(s) for " + ne.getCacheRef() + ".");
 					}					
@@ -210,14 +190,14 @@ public class QuerySource {
 				System.out.println(e.getMessage());
 			}
 		}
-
-		Long stop = System.nanoTime();
-		System.out.println(source + ": Retrieved " + uri_candidates.size() + " URI candidate(s) in total. Time: " + TimeUnit.NANOSECONDS.toMillis(stop-start) + "ms");
-		start = stop;
-		
-		
-		
-		// ------- 2) Construct Model based on candidate URIs ------- 
+		System.out.println(source + ": Retrieved " + uri_candidates.size() + " URI candidate(s) in total. Time: " + TimeUnit.NANOSECONDS.toMillis(System.nanoTime()-start) + "ms");
+		return uri_candidates;
+	}
+	
+	
+	// ------- 2) Construct Model based on candidate URIs ------- 
+	private Model getContextModel(List<String> uri_candidates){
+		Long start = System.nanoTime();	
 		
 //		*Example*
 //		CONSTRUCT { ?s ?p ?o }
@@ -241,7 +221,8 @@ public class QuerySource {
 //		   }
 //		}
 		
-		parts = new ArrayList<String>(); 
+		String queryString = "";
+		List<String> parts = new ArrayList<String>();
 		
 		//Available Properties
 		parts.add("{"
@@ -283,11 +264,69 @@ public class QuerySource {
 				+ "}"
 				;
 		
+				
+		System.out.println(source + ": Queried properties, relations and labels. Model size: " + model.size() + ". Time: " + TimeUnit.NANOSECONDS.toMillis(System.nanoTime()-start) + "ms");
+		
 		// execute Query 
-		model.add(execConstruct(queryString));
-		stop = System.nanoTime();
-		System.out.println(source + ": Queried properties, relations and labels. Model size: " + model.size() + ". Time: " + TimeUnit.NANOSECONDS.toMillis(stop-start) + "ms");
-		start = stop;
+		return execConstruct(queryString);
+	}
+	
+	
+	//######### Helper Methods ##################
+	
+	//consistent source specific key for cache
+	private String getCacheRef(NamedEntity ne){
+		return source + ne.getCacheRef();
+	}
+	
+	private List<String> findMostRelevantURIs(List<QuerySolution> res, NamedEntity ne){
+		//extended logic for URI candidate identification, if too many -> Score: string similarity and count of relations
+		//Score each URI by its label and relations
+		TreeMap<Double, List<String>> score_uris = new TreeMap<Double, List<String>>();
+		List<String> uris = new ArrayList<String>();
+		
+		//ugly, but not efficient via external SPARQL: get max count of relations
+		int max_cnt = 0;
+		for (QuerySolution s : res) {
+			if(s.getLiteral("count").getInt() > max_cnt)
+				max_cnt = s.getLiteral("count").getInt();
+		}
+		
+		//calc score for each uri: Similarity * Relation Score having range 0-1
+		//Similariy: EditDistanc normalized to range 0-1 
+		//Realtion Score: Relation Count / Max(Relation Count) -> range 0-1
+		for (QuerySolution s : res) {
+			String label = s.get("label").toString();
+			//LOCATIONs have often a region information after a comma 
+			if(ne.getType() == EntityType.LOCATION){
+			    Matcher matcher = Pattern.compile("([^,]*)(,.*)*").matcher(label);
+				if(matcher.find()){
+					label = matcher.group(1);
+//					System.out.println("Regex Gr. 1: " + label);
+				}
+			}
+			Double score = stringSimilarity(label ,ne.getName()) * (s.getLiteral("count").getDouble()/max_cnt);
+			if(score_uris.containsKey(score)){
+				score_uris.get(score).add(s.getResource("s").getURI());
+			}else{
+				List<String> new_list = new ArrayList<String>();
+				new_list.add(s.getResource("s").getURI());
+				score_uris.put(score, new_list);
+			}
+		}						
+		//Select at least top 5 scored URIs - but accept only -25% from top score 
+		int cnt = 0;
+		Double min_score = score_uris.descendingKeySet().first() * 0.75;
+		for (Double key : score_uris.descendingKeySet()) {
+			if(key < min_score)
+				break;
+			uris.addAll(score_uris.get(key));
+			System.out.println(source + ": Score for " + ne.getCacheRef() + " of " + score_uris.get(key)+ ": " + key);
+			cnt += score_uris.get(key).size();
+			if(cnt >= 5)
+				break;
+		}	
+		return (uris);
 	}
 	
 	//Similarity (from http://stackoverflow.com/questions/955110/similarity-string-comparison-in-java)
@@ -301,9 +340,8 @@ public class QuerySource {
 
 	    return (longerLength - StringUtils.getLevenshteinDistance(longer, shorter)) / (double) longerLength; 
 	  }
-	
 
-	
+	//Actual execution of construct query to endpoint
 	private Model execConstruct(String queryString) {
 		Model m = ModelFactory.createDefaultModel();
 		
@@ -339,16 +377,7 @@ public class QuerySource {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-			String s1 = "New York";
-			String s2 = "New York";
-		    String longer = s1, shorter = s2;
-		    if (s1.length() < s2.length()) { // longer should always have greater length
-		      longer = s2; shorter = s1;
-		    }
-		    int longerLength = longer.length();
-		   // if (longerLength == 0) { return 1.0; /* both strings are zero length */ }
 
-		    System.out.println((longerLength - StringUtils.getLevenshteinDistance(longer, shorter)) / (double) longerLength); 	
 	
 	}
 }

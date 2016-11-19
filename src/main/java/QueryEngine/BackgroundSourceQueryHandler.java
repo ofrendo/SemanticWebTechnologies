@@ -1,11 +1,10 @@
 package main.java.QueryEngine;
 
 import java.util.List;
-
 import org.apache.jena.rdf.model.Model;
-
 import main.java.NEREngine.NamedEntity;
 
+@Deprecated
 public class BackgroundSourceQueryHandler extends Thread {
 	private QuerySource.Source s;
 	private List<NamedEntity> entities;
@@ -23,7 +22,7 @@ public class BackgroundSourceQueryHandler extends Thread {
 
 	
 	public void run(){
-		m = new QuerySource(s, entities, properties).getModel();	
+//		m = new QuerySource(s, entities, properties).getModel();	
 	}
 	
 	public Model getResultModel(){

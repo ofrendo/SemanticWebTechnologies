@@ -34,15 +34,12 @@ import main.java.NEREngine.NamedEntity.EntityType;
  *
  */
 public class JenaEngine implements QueryEngine {	
-	private static Model model;
-	private static InfModel infModel;
-	private static OntModel ontoModel;
-	private static List<NamedEntity> inCache;
-	private static final String PREFIX = ":";
-	private static Boolean modelChanged = false;
+	private static OntModel ontoModel;	
 	private static QueryProperties availableProperties;
+	private static final String PREFIX = ":";
 	
-	private Model localModel;
+	private Model model; //Raw input from source
+	private InfModel infModel; //Infered model -> combination of raw model and ontology
 	private List<NamedEntity> entities;
 	private QueryProperties qp;
 	
@@ -54,15 +51,13 @@ public class JenaEngine implements QueryEngine {
 		if(ontoModel == null){
 			ontoModel = loadLocalOntology();
 		}
-		if(inCache == null){
-			inCache = new ArrayList<NamedEntity>();
-		}		
-		if(model == null){
-			//That Memory Model doesn't work as expected -> only in memory during JVM lifetime -> restart: no model anymore
-			model = ModelFactory.createMemModelMaker().openModel("LocalCache", false);
-			System.out.println("Loaded model of size: " + model.size());
-			modelChanged = true;
-		}
+
+//		if(model == null){
+//			//That Memory Model doesn't work as expected -> only in memory during JVM lifetime -> restart: no model anymore
+//			model = ModelFactory.createMemModelMaker().openModel("LocalCache", false);
+//			System.out.println("Loaded model of size: " + model.size());
+//			modelChanged = true;
+//		}
 		if(availableProperties == null){
 			availableProperties = readAvailableProperties();
 		}		
@@ -108,8 +103,7 @@ public class JenaEngine implements QueryEngine {
 	 * Query properties with custom set of properties
 	 */
 	@Override
-	public void queryEntities(List<NamedEntity> entities,
-			QueryProperties props) {
+	public void queryEntities(List<NamedEntity> entities, QueryProperties props) {
 		if(props == null){
 			props = availableProperties;
 		}
@@ -118,7 +112,7 @@ public class JenaEngine implements QueryEngine {
 		this.entities = copyList(entities);
 				
 		this.qp = props;
-		this.localModel = ModelFactory.createDefaultModel();
+		this.model = ModelFactory.createDefaultModel();
 		
 		//Query Sources to build model
 		handleParallelSourceQueries();
@@ -135,7 +129,7 @@ public class JenaEngine implements QueryEngine {
 	
 	@Override
 	public List<String[]> getContextTriples(){		
-		return queryContextTriples(infModel);
+		return queryContextTriples(model); //independent of own ontology
 	}	
 	
 
@@ -166,59 +160,28 @@ public class JenaEngine implements QueryEngine {
 
 	private void handleParallelSourceQueries() {
 		
-		//TODO: Remove model Caching
-		//Initialize HashMaps
-//		HashMap<EntityType, List<NamedEntity>> queryEntities = new HashMap<EntityType, List<NamedEntity>> ();
-//		for (EntityType et : EntityType.values()) {
-//			queryEntities.put(et,new ArrayList<NamedEntity>());
-//		}
-//		
-//		//Determine which entities to query per entity type				
-//		for (NamedEntity entity : entities) {
-//			if(!inCache.contains(entity) && !queryEntities.get(entity.getType()).contains(entity)){
-//				//Has to be add to query
-//				queryEntities.get(entity.getType()).add(entity);
-//			}else{
-//				System.out.println("Found in cache: " + entity.getType() + " " + entity.getName());
-//			}			
-//		}		
-		
-		
-		//Query sources in parallel per entity type if requested
-		//(without filter on entity type queries get to large -> aborted)
+		//Query sources in parallel 
 		System.out.println("Start load from sources...");
 		Long start = System.nanoTime();
 		ThreadGroup group = new ThreadGroup( entities.toString() );
-//		for (EntityType et : queryEntities.keySet()) {
-//			if(!queryEntities.get(et).isEmpty()){
-//	
-//				//DBPedia
-//				new BackgroundSourceQueryHandler(group, QuerySource.Source.DBPedia, et, queryEntities.get(et)).start();
-//				//LinkedMDB
-//				//new BackgroundSourceQueryHandler(group, QuerySource.Source.LinkedMDB, et, queryEntities.get(et)).start();
-//			}
+
+		//DBPedia
+		new QuerySource(group, QuerySource.Source.DBPedia, entities, getQueryProperties()).start();
+		//LinkedMDB
+		//new BackgroundSourceQueryHandler(group, QuerySource.Source.LinkedMDB, et, queryEntities.get(et)).start();
+		
+		
+//		for (QuerySource.Source s : QuerySource.Source.values()) {
+//			new QuerySource(group, s, entities, getQueryProperties()).start();
 //		}
 		
-		//DBPedia
-		new BackgroundSourceQueryHandler(group, QuerySource.Source.DBPedia, entities, getQueryProperties()).start();
-		//LinkedMDB
-		//new BackgroundSourceQueryHandler(group, QuerySource.Source.LinkedMDB, et, queryEntities.get(et)).start();		
-		
 		//Wait till all are finished and derive model
-		Model resModel;
 		try {
-			BackgroundSourceQueryHandler[] threads = new BackgroundSourceQueryHandler[group.activeCount()];
+			QuerySource[] threads = new QuerySource[group.activeCount()];
 			group.enumerate(threads);
 			for (int i = 0; i < threads.length; i++) {
 				threads[i].join();
-				resModel = threads[i].getResultModel(); 
-				if(resModel != null && resModel.size() > 0){
-					model.add(resModel);
-					modelChanged = true;
-					for(NamedEntity e : threads[i].getEntities()){
-						inCache.add(e);
-					}
-				}
+				model.add(threads[i].getModel()); //Fallback for query errors is empty model
 			}
 		} catch (InterruptedException e) {
 			System.out.println(e.getMessage());
@@ -226,6 +189,7 @@ public class JenaEngine implements QueryEngine {
 		System.out.println("Load of Sources finished. Model size: " + model.size()+ "; Time: " + TimeUnit.NANOSECONDS.toMillis(System.nanoTime()-start) + "ms");
 	}
 	
+	//Derive all possibly needed properties based on own ontology definition
 	private List<String> getQueryProperties(){
 		
 		List<String> props = new ArrayList<String>();
@@ -246,15 +210,13 @@ public class JenaEngine implements QueryEngine {
 	private void handleLocalQueries() {
 
 		//Construct inference model (Ontology + loaded triples) 
-		//Try to identify correct entities and context!
 		//-> count (indirect) relations between entities and choose most relevant entities
 		//System.out.println("Relevant URIs in Context: " + relevantURIs);
-		checkInfModel();
-		deriveRelevantURIs(infModel);
+		infModel = ModelFactory.createInfModel( ReasonerRegistry.getOWLMicroReasoner(), ModelFactory.createUnion(model, ontoModel));
 		
-		localModel = constructContextModel();		
-		
-				
+		//Set URI for each entity
+		deriveRelevantURIs(this.infModel);
+					
 		//query each entity separately on local model				
 		for (NamedEntity e : entities) {
 			//construct dictionary for entity type specific properties 
@@ -265,7 +227,7 @@ public class JenaEngine implements QueryEngine {
 		
 			//Execute Query
 			//result.add(executeLocalQuery(lq,propDic,cmodel, e));
-			executeLocalQuery(lq,propDic,localModel, e);	
+			executeLocalQuery(lq,propDic,infModel, e);	
 		}
 	
 	}
@@ -307,11 +269,10 @@ public class JenaEngine implements QueryEngine {
 				+ res + " rdfs:label ?l."
 			;
 		// 3b) dynamic part
-		//queryString += " OPTIONAL { ";
 		for (Entry<String,String> entry: props.entrySet()) {
 			queryString += " OPTIONAL { " + res + " " + PREFIX + entry.getKey() + " ?" + entry.getValue() + ". }";
 		}
-		//queryString += " }";
+
 		// 3c) Filter
 		queryString += " FILTER(LANG(?l) = '' || LANGMATCHES(LANG(?l), 'en'))";
 		
@@ -367,42 +328,7 @@ public class JenaEngine implements QueryEngine {
 		qe.close();
 	}
 	
-	
-	// ------- Construct model: load own Ontology + queried model(s) and do some Inference
-	private void checkInfModel() {	
-		//get the basic model, enhance with ontology, do inference
-		//Reasoner takes to much time, but OWLMicro seems to work but could be to simple ... https://jena.apache.org/documentation/inference
-		Long start = System.nanoTime();
-		if(modelChanged){
-			//it is much more efficient to reason on basic statement than do reasoning on a previously inferred model
-			infModel = ModelFactory.createInfModel( ReasonerRegistry.getOWLMicroReasoner(), ModelFactory.createUnion(model, ontoModel));
-			modelChanged = false;
-		}		
-
-		System.out.println("Infered Model size: " + model.size() + "; Time: " + TimeUnit.NANOSECONDS.toMillis(System.nanoTime()-start) + "ms");				
-
-	}
-	
-	private Model constructContextModel(){
-		//Derive relevant subspace model based on identified URIs -> Describe of URIs
-		String filter = "";
-
-		for (NamedEntity ne : entities) {
-			if(filter != ""){
-				filter += " || ";
-			}
-			filter += "?s = <" + ne.getURI() + ">";
-		}
-		
-		String queryString = "DESCRIBE ?s WHERE { "
-				+ " ?s ?p ?o"
-				+ " FILTER ("  + filter + " ) } ";
-		
-		Query q = QueryFactory.create(queryString);
-		QueryExecution qe = QueryExecutionFactory.create(q, infModel);
-		return ModelFactory.createInfModel(ReasonerRegistry.getOWLMicroReasoner(), qe.execDescribe());		
-	}
-	
+	// ------- Per Entity: Determine most relevant URI across sources
 	private void deriveRelevantURIs(Model m) {
 		
 		for (NamedEntity e : entities) {	
@@ -486,24 +412,24 @@ public class JenaEngine implements QueryEngine {
 
 
 	// ------- Parse Tuple of local query result: based on Entity  
-		private void handleQueryTuple(QuerySolution tuple,
-			Hashtable<String, String> propDic, NamedEntity ne) {
-			String v = "";
-			String k = "";
-			
-			//handle dynamic properties
-			for (Entry<String,String> entry: propDic.entrySet()) {
-				v = new String();
-				k = new String(); 
-				k = entry.getKey();
-				if(tuple.contains(entry.getValue())){
-					v = tuple.get(entry.getValue()).toString();
-					ne.addPropertyValue(k, v, 1);
-					
-				}
+	private void handleQueryTuple(QuerySolution tuple,
+		Hashtable<String, String> propDic, NamedEntity ne) {
+		String v = "";
+		String k = "";
+		
+		//handle dynamic properties
+		for (Entry<String,String> entry: propDic.entrySet()) {
+			v = new String();
+			k = new String(); 
+			k = entry.getKey();
+			if(tuple.contains(entry.getValue())){
+				v = tuple.get(entry.getValue()).toString();
+				ne.addPropertyValue(k, v, 1);
+				
 			}
-			
 		}
+		
+	}
 
 
 	// ------- read available Properties via local Ontology
@@ -560,38 +486,6 @@ public class JenaEngine implements QueryEngine {
 	
 	private List<String[]> queryContextTriples(Model m) {
 		List<String[]> result = new ArrayList<String[]>();
-//		System.out.println(m);
-		
-//		SELECT DISTINCT ?l_e1 ?l_p ?l_e2 WHERE {
-//			?e1 ?p ?e2.
-//			?e1 rdfs:label ?le1.
-//			?e2 rdfs:label ?le2.
-//			?p rdfs:label ?lp.
-//			FILTER ( 
-//			(?e1 = <http://dbpedia.org/resource/Walldorf> || ?e1 =  <http://dbpedia.org/resource/SAP_SE>) && 
-//			(?e2 = <http://dbpedia.org/resource/Walldorf> || ?e2 = <http://dbpedia.org/resource/SAP_SE>) &&
-//			LANGMATCHES(LANG(?le1), 'en') && LANGMATCHES(LANG(?le2), 'en') && LANGMATCHES(LANG(?lp), 'en') 
-//			)
-//			BIND (STR(?le1) as ?l_e1)
-//			BIND (STR(?le2) as ?l_e2)
-//			BIND (STR(?lp) as ?l_p)
-//			}
-		
-//		SELECT DISTINCT ?l_e1 ?l_p ?l_e2 WHERE {
-//			?e1 ?p ?e2.
-//			?o ?p2 ?e2.
-//			?e1 rdfs:label ?le1.
-//			?e2 rdfs:label ?le2.
-//			?p rdfs:label ?lp.
-//			FILTER ( 
-//			(?e1 = <http://dbpedia.org/resource/Walldorf> || ?e1 =  <http://dbpedia.org/resource/SAP_SE>) && ?e1 != ?o &&
-//			(?o = <http://dbpedia.org/resource/Walldorf> || ?o = <http://dbpedia.org/resource/SAP_SE>) &&
-//			LANGMATCHES(LANG(?le1), 'en') && LANGMATCHES(LANG(?le2), 'en') && LANGMATCHES(LANG(?lp), 'en') 
-//			)
-//			BIND (STR(?le1) as ?l_e1)
-//			BIND (STR(?le2) as ?l_e2)
-//			BIND (STR(?lp) as ?l_p)
-//			}
 		
 		//Add filter for URI 
 		String filter_e1 = "";
