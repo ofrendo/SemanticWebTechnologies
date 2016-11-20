@@ -34,13 +34,13 @@ import main.java.NEREngine.NamedEntity.EntityType;
  */
 public class JenaEngine implements QueryEngine {	
 	private static OntModel ontoModel;	
-	private static HashMap<EntityType,List<QueryProperty>> availableProperties;
+	private static QueryProperties availableProperties;
 	private static final String PREFIX = ":";
 	
 	private Model model; //Raw input from source
 	private InfModel infModel; //Infered model -> combination of raw model and ontology
 	private List<NamedEntity> entities;
-	private HashMap<EntityType,List<QueryProperty>> properties;
+	private QueryProperties properties;
 	private List<QuerySource.Source> sources; 
 	
 	
@@ -61,28 +61,28 @@ public class JenaEngine implements QueryEngine {
 	 * @see QueryEngine.QueryEngine#getAvailableProperties()
 	 */
 	@Override
-	public HashMap<EntityType,List<QueryProperty>> getAvailableProperties() {
+	public QueryProperties getAvailableProperties() {
 		//If properties manipulated later -> by reference is bad -> deep copy needed
-		HashMap<EntityType,List<QueryProperty>> ext_list = new HashMap<EntityType,List<QueryProperty>>();
-		for (EntityType et : EntityType.values()) {
-			List<QueryProperty> list = new ArrayList<QueryProperty>();
-			list.addAll(getAvailableProperties(et));
-			ext_list.put(et,list);
-		}
+//		HashMap<EntityType,List<QueryProperty>> ext_list = new HashMap<EntityType,List<QueryProperty>>();
+//		for (EntityType et : EntityType.values()) {
+//			List<QueryProperty> list = new ArrayList<QueryProperty>();
+//			list.addAll(getAvailableProperties(et));
+//			ext_list.put(et,list);
+//		}
 		
-		return ext_list;
+		return new QueryProperties(availableProperties);
 	}
 
-	/* (non-Javadoc)
-	 * @see QueryEngine.QueryEngine#getAvailableProperties(NEREngine.NamedEntity.EntityType)
-	 */
-	@Override
-	public List<QueryProperty> getAvailableProperties(EntityType type) {
-		//same issue as above -> deep copy to avoid return by reference
-		List<QueryProperty> ext_list = new ArrayList<QueryProperty>();
-		ext_list.addAll(availableProperties.get(type));
-		return ext_list;
-	}
+//	/* (non-Javadoc)
+//	 * @see QueryEngine.QueryEngine#getAvailableProperties(NEREngine.NamedEntity.EntityType)
+//	 */
+//	@Override
+//	public List<QueryProperty> getAvailableProperties(EntityType type) {
+//		//same issue as above -> deep copy to avoid return by reference
+//		List<QueryProperty> ext_list = new ArrayList<QueryProperty>();
+//		ext_list.addAll(availableProperties.get(type));
+//		return ext_list;
+//	}
 
 	/* (non-Javadoc)
 	 * @see QueryEngine.QueryEngine#queryEntityProperties(java.util.List)
@@ -98,7 +98,7 @@ public class JenaEngine implements QueryEngine {
 	 * Query properties with custom set of properties
 	 */
 	@Override 
-	public boolean queryEntities(List<NamedEntity> entities, HashMap<EntityType,List<QueryProperty>> props, List<QuerySource.Source> sources) {
+	public boolean queryEntities(List<NamedEntity> entities, QueryProperties props, List<QuerySource.Source> sources) {
 		if(props == null){
 			props = availableProperties;
 		}
@@ -447,8 +447,8 @@ public class JenaEngine implements QueryEngine {
 
 
 	// ------- read available Properties via local Ontology
-	private HashMap<EntityType,List<QueryProperty>> readAvailableProperties(){
-		HashMap<EntityType,List<QueryProperty>> queryprops = new HashMap<EntityType,List<QueryProperty>>();
+	private QueryProperties readAvailableProperties(){
+		QueryProperties queryprops = new QueryProperties();
 		
 		Model m = ModelFactory.createRDFSModel(ontoModel);
 		List<QueryProperty> props;
@@ -624,17 +624,19 @@ public class JenaEngine implements QueryEngine {
 		// 3rd TEST (Cache and remove property)
 		JenaEngine je = new JenaEngine();
 		text = "This is a test to identify if Walldorf is in cache but Heidelberg has to be queried";
-		HashMap<EntityType,List<QueryProperty>> props = je.getAvailableProperties();
+		QueryProperties props = je.getAvailableProperties();
 		
-		QueryProperty remove = null;
+		String uri = "";
 		for (QueryProperty qp : props.get(EntityType.LOCATION)) {
 			if(qp.getLabel().equals("depiction"))
-				remove = qp;				
+				uri = qp.getUri();				
 		}	
 		boolean b = false;
-		if(remove != null)
-			b = props.get(EntityType.LOCATION).remove(remove);
+		if(uri != "")
+			b = props.remove(EntityType.LOCATION,uri);
 		System.out.println("Removal: " + b);
+		System.out.println("Available Props: " + je.getAvailableProperties());
+		
 		
 		runtest(text,props,null);
 		
@@ -685,7 +687,7 @@ public class JenaEngine implements QueryEngine {
 		runtest(text, null, null);
 	}
 
-	private static void runtest(String text, HashMap<EntityType,List<QueryProperty>> qp, List<QuerySource.Source> sources) {
+	private static void runtest(String text, QueryProperties qp, List<QuerySource.Source> sources) {
 		// 1) NER
 		List<NamedEntity> list = CoreNLPEngine.getInstance().getEntitiesFromText(text);
 		System.out.println("Result NER:");

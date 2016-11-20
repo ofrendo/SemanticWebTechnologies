@@ -11,6 +11,7 @@ public class QueryProperties{
 	private HashMap<EntityType, List<QueryProperty>> map;
 
 	public QueryProperties() {
+		//Initialize all possible lists
 		map = new HashMap<EntityType, List<QueryProperty>>();
 		for (EntityType et : EntityType.values()) {
 			List<QueryProperty> list = new ArrayList<QueryProperty>();
@@ -20,11 +21,11 @@ public class QueryProperties{
 	
 	//Copy
 	public QueryProperties(QueryProperties template) {
-		map = new HashMap<EntityType, List<QueryProperty>>();
+		this();
 		for (EntityType et : EntityType.values()) {
 			List<QueryProperty> list = new ArrayList<QueryProperty>();
 			list.addAll(template.get(et));
-			map.put(et, list);
+			map.get(et).addAll(list);
 		}
 	}
 	
@@ -32,13 +33,32 @@ public class QueryProperties{
 		return map.get(et); 
 	}
 	
+	//remove by uri
 	public boolean remove(EntityType et, String uri){
 		QueryProperty remove = null;
 		for (QueryProperty qp : map.get(EntityType.LOCATION)) {
 			if(qp.getUri().equals(uri))
 				remove = qp;				
 		}	
-		return map.get(EntityType.LOCATION).remove(remove);		
+		return this.remove(EntityType.LOCATION, remove);		
+	}
+	
+	//remove by object
+	public boolean remove(EntityType et, QueryProperty qp){
+		return map.get(EntityType.LOCATION).remove(qp);		
+	}
+	
+
+	public void put(EntityType et, List<QueryProperty> props) {
+		map.get(et).addAll(props);
+	}
+	
+	public String toString() {
+		String s = "";
+		for (EntityType et : map.keySet()) {
+		   s += et + ": " + map.get(et) + "\n";	
+		}
+		return s;
 	}
 	
 	public String toJSONString() {
