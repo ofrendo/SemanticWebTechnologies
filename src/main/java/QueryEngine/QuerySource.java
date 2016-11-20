@@ -34,6 +34,7 @@ public class QuerySource extends Thread{
 	private Source source;
 	private List<NamedEntity> entities;
 	private List<String> properties;
+	private List<String> uri_candidates;
 //	private boolean isSPARQL10; 
 	
 	// ############ Interface ###############
@@ -56,6 +57,7 @@ public class QuerySource extends Thread{
 		this.source = s;
 		this.entities = entities;
 		this.properties = properties;
+		this.uri_candidates = new ArrayList<String>();
 		
 		determineSourceProperties(s);
 		this.model = ModelFactory.createDefaultModel(); //Fallback: Empty Model
@@ -65,7 +67,15 @@ public class QuerySource extends Thread{
 	}
 	
 	public void run(){
-		getContextModel(getURICandidates(entities));
+		// 1) Identify potential URIs 
+		this.uri_candidates.addAll(getURICandidates(entities));
+		
+		// 2) Query context of them
+		if(uri_candidates.isEmpty()){
+			System.out.println("ERROR - " + source + ": No URIs found.");
+			return;
+		}
+		getContextModel(this.uri_candidates);
 	}
 	
 	//######## Methods for source specific definitions ##############
@@ -394,7 +404,7 @@ public class QuerySource extends Thread{
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
-	
+		System.out.println(String.valueOf(Math.abs("ztewfavbdhjsfd ndsfvg<hjkdölmf".hashCode())));
+		
 	}
 }
