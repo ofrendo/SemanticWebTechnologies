@@ -589,8 +589,11 @@ public class JenaEngine implements QueryEngine {
 //		runtest(text,null,sources);
 		
 		//text = "The BBC's Sanjoy Majumder, in Delhi, says rescuers have recently brought out some survivors, including two children, which brought cheers from onlookers.";
-//		text = "She told the Times of India that most of the people travelling with her had been found but that her father was still missing.";
+//		text = "She told the Times of India that most of the people travelling with her had been found but that her father was still missing."; // No Organization!
 //		runtest(text);
+		
+		text = "She told the german Spiegel that most of the people travelling with her had been found but that her father was still missing."; // No Organization!
+		runtest(text);
 		
 		//1st simple test with all entity types
 //		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
@@ -621,24 +624,24 @@ public class JenaEngine implements QueryEngine {
 //		text = "Just testing how caching works for H. Plattner from Walldorf.";
 //		runtest(text);
 //		
-		// 3rd TEST (Cache and remove property)
-		JenaEngine je = new JenaEngine();
-		text = "This is a test to identify if Walldorf is in cache but Heidelberg has to be queried";
-		QueryProperties props = je.getAvailableProperties();
-		
-		String uri = "";
-		for (QueryProperty qp : props.get(EntityType.LOCATION)) {
-			if(qp.getLabel().equals("depiction"))
-				uri = qp.getUri();				
-		}	
-		boolean b = false;
-		if(uri != "")
-			b = props.remove(EntityType.LOCATION,uri);
-		System.out.println("Removal: " + b);
-		System.out.println("Available Props: " + je.getAvailableProperties());
-		
-		
-		runtest(text,props,null);
+//		// 3rd TEST (Cache and remove property)
+//		JenaEngine je = new JenaEngine();
+//		text = "This is a test to identify if Walldorf is in cache but Heidelberg has to be queried";
+//		QueryProperties props = je.getAvailableProperties();
+//		
+//		String uri = "";
+//		for (QueryProperty qp : props.get(EntityType.LOCATION)) {
+//			if(qp.getLabel().equals("depiction"))
+//				uri = qp.getUri();				
+//		}	
+//		boolean b = false;
+//		if(uri != "")
+//			b = props.remove(EntityType.LOCATION,uri);
+//		System.out.println("Removal: " + b);
+//		System.out.println("Available Props: " + je.getAvailableProperties());
+//		
+//		
+//		runtest(text,props,null);
 		
 		/*
 		// 4th TEST: Heikos example

@@ -22,12 +22,14 @@ public class BackgroundQueryExecution extends Thread {
 	    SELECT, CONSTRUCT
 	}
 	
-	QueryType queryType;
-	String queryString;
-	String endpoint;
-	NamedEntity ne;
-	List<QuerySolution> solutions;
-	Model model;
+	private QueryType queryType;
+	private String queryString;
+	private String endpoint;
+	private NamedEntity ne;
+	private List<QuerySolution> solutions;
+	private Model model;
+	private String errorMsg;
+	private boolean hasError;
 	
 	public BackgroundQueryExecution(ThreadGroup group, String queryString, String endpoint, QueryType queryType) {		
 		this(group, queryString, endpoint, null, queryType);
@@ -41,6 +43,8 @@ public class BackgroundQueryExecution extends Thread {
 		this.solutions = new ArrayList<QuerySolution>();
 		this.model = ModelFactory.createDefaultModel();
 		this.queryType = queryType;
+		this.errorMsg = "";
+		this.hasError = false;
 	}
 	
 	public void run(){
@@ -71,6 +75,14 @@ public class BackgroundQueryExecution extends Thread {
 		return ne;
 	}
 	
+	public boolean hasError(){
+		return hasError;
+	}
+	
+	public String getErrorMsg(){
+		return errorMsg;
+	}
+	
 	public String getQueryString(){
 		return queryString;
 	}
@@ -85,9 +97,11 @@ public class BackgroundQueryExecution extends Thread {
 //			else
 				q = QueryFactory.create(queryString);
 		} catch (QueryParseException qexc) {
-			System.out.println("ERROR - " + endpoint + ": Background query generation failed! Query string:");
-			System.out.println(queryString);
-			System.out.println(qexc.getMessage());
+//			System.out.println("ERROR - " + endpoint + ": Background query generation failed! Query string:");
+//			System.out.println(queryString);
+//			System.out.println(qexc.getMessage());
+			hasError = true;
+			errorMsg = "Background query generation failed: "+ qexc.getMessage();
 			return res;
 		}
 //		System.out.println(q);
@@ -103,8 +117,10 @@ public class BackgroundQueryExecution extends Thread {
 			}
 			
 		} catch (Exception exc) {
-			System.out.println("ERROR - " + endpoint + ": Background query failed: " + exc.getMessage());
-			System.out.println("ERROR - " + queryString);
+//			System.out.println("ERROR - " + endpoint + ": Background query failed: " + exc.getMessage());
+//			System.out.println("ERROR - " + queryString);
+			hasError = true;
+			errorMsg = "Background query failed: " + exc.getMessage();
 		} finally {
 			qe.close();
 		}
@@ -119,8 +135,10 @@ public class BackgroundQueryExecution extends Thread {
 		try {
 			q = QueryFactory.create(queryString);
 		} catch (QueryParseException qexc) {
-			System.out.println("ERROR - " + endpoint + ": Query generation failed: " + qexc.getMessage());
-			System.out.println("ERROR - " + queryString);
+//			System.out.println("ERROR - " + endpoint + ": Query generation failed: " + qexc.getMessage());
+//			System.out.println("ERROR - " + queryString);
+			hasError = true;
+			errorMsg = "Background query generation failed: "+ qexc.getMessage();
 			return m;
 		}
 //		System.out.println(q);
@@ -131,8 +149,10 @@ public class BackgroundQueryExecution extends Thread {
 		try {
 			m = qe.execConstruct();
 		} catch (Exception exc) {
-			System.out.println("ERROR - " + endpoint + ": Query failed: " + exc.getMessage());
-			System.out.println("ERROR - " + queryString);
+//			System.out.println("ERROR - " + endpoint + ": Query failed: " + exc.getMessage());
+//			System.out.println("ERROR - " + queryString);
+			hasError = true;
+			errorMsg = "Background query failed: " + exc.getMessage();
 		} finally {
 			qe.close();
 		}

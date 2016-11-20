@@ -72,7 +72,7 @@ public class QuerySource extends Thread{
 		
 		// 2) Query context of them
 		if(uri_candidates.isEmpty()){
-			System.out.println("ERROR - " + source + ": No URIs found.");
+			System.out.println(source + ": ERROR - No URIs found.");
 			return;
 		}
 		getContextModel(this.uri_candidates);
@@ -204,7 +204,8 @@ public class QuerySource extends Thread{
 					threads[i].join();
 					List<QuerySolution> res = threads[i].getSolutions();
 					NamedEntity ne = threads[i].getNamedEntity();
-					if(res != null && !res.isEmpty()){
+					boolean hasError = threads[i].hasError();
+					if(res != null && !res.isEmpty() && !hasError){
 						//Results found -> if more than 5 -> extended logic						
 						List<String> uris = new ArrayList<String>();
 						if(res.size() <= 5){
@@ -212,7 +213,7 @@ public class QuerySource extends Thread{
 								if(s.contains("s")){
 									uris.add(s.getResource("s").getURI());
 								}else{
-									System.out.println("WARNING - " + source + ": " + ne.getCacheRef() + ": Result contains wrong variable(s). Query: " + threads[i].getQueryString());
+									System.out.println(source + ": WARNING - " + ne.getCacheRef() + ": Result contains wrong variable(s). Query: " + threads[i].getQueryString());
 								}
 							}
 						}else{
@@ -222,7 +223,15 @@ public class QuerySource extends Thread{
 						uriCache.put(getCacheRef(ne), uris);
 						uri_candidates.addAll(uris);
 						System.out.println(source + ": Retrieved " + uris.size() + " URI candidate(s) for " + ne.getCacheRef() + ".");
-					}					
+					}else{
+						//No match or error?
+						if(hasError){
+							System.out.println(source + ": ERROR - " + ne.getCacheRef() + ": " + threads[i].getErrorMsg());
+							System.out.println(source + ": ERROR - " + ne.getCacheRef() + ": Query string: " + threads[i].getQueryString());
+						}else{
+							System.out.println(source + ": WARNING - " + ne.getCacheRef() + ": Result is empty. Query: " + threads[i].getQueryString());
+						}							
+					}
 				}
 			} catch (InterruptedException e) {
 				System.out.println(e.getMessage());
@@ -316,7 +325,7 @@ public class QuerySource extends Thread{
 				if(threads[i].getModel().size() > 0){
 					this.model.add(threads[i].getModel());
 				}else{
-					System.out.println("WARNING - " + source + ": Construct query returned no result: " + threads[i].getQueryString());
+					System.out.println(source + ": WARNING - Construct query returned no result: " + threads[i].getQueryString());
 				}
 			}
 		} catch (InterruptedException e) {
