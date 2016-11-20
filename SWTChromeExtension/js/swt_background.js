@@ -148,7 +148,8 @@
 		var selectedText = (CONFIG.USE_SELECTED_TEXT === null) ?
 							getSelectedText() :
 							CONFIG.USE_SELECTED_TEXT;
-		
+		selectedText = sanitizeInput(selectedText);
+
 		if (selectedText.length > 0) {
 			var buttonSearch = document.getElementById("swtButtonSearch");
 			buttonSearch.innerHTML = "Search for entities (LOADING...)";
@@ -160,6 +161,12 @@
 			});
 		}
 		
+	}
+
+	function sanitizeInput(inputText) {
+		inputText = inputText.replace("’", "'");
+
+		return inputText;
 	}
 
 	// http://stackoverflow.com/questions/3545018/selected-text-event-trigger-in-javascript

@@ -89,9 +89,14 @@ public class CoreNLPEngine implements NEREngine {
               currNeToken = token.get(NamedEntityTagAnnotation.class);
               String word = token.get(TextAnnotation.class);
               
-              System.out.println("word=" + word + ", token=" + currNeToken);
+              //System.out.println("word=" + word + ", token=" + currNeToken);
               // Strip out "O"s and NUMBERS completely, makes code below easier to understand
-              if (currNeToken.equals("O") || currNeToken.equals("NUMBER")) {
+              // Removing NUMBERS:
+              // "Passenger Ruby Gupta, 20, was travelling to Azamagarh to be married on 1 December." --> 20Azamgarh
+              // Removing MISC: 
+              // "Indian Prime Minister Narendra Modi tweeted: \"Anguished beyond words on the loss of lives due to the derailing of the Patna-Indore express. My thoughts are with the bereaved families.\"" --> IndianNarendra Modi
+              
+              if (currNeToken.equals("O") || currNeToken.equals("NUMBER") || currNeToken.equals("MISC")) {
                 // LOG.debug("Skipping '{}' classified as {}", word, currNeToken);
                 if (!prevNeToken.equals("O") && (sb.length() > 0)) {
                   handleEntity(prevNeToken, sb, tokens);
