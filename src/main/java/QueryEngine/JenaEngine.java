@@ -163,25 +163,33 @@ public class JenaEngine implements QueryEngine {
 		//Query sources in parallel 
 		System.out.println("Start load from sources...");
 		Long start = System.nanoTime();
-		ThreadGroup group = new ThreadGroup( entities.toString() );
-
-		//DBPedia
-		new QuerySource(group, QuerySource.Source.DBPedia, entities, getQueryProperties()).start();
-		//LinkedMDB
-		//new BackgroundSourceQueryHandler(group, QuerySource.Source.LinkedMDB, et, queryEntities.get(et)).start();
+		ThreadGroup group = new ThreadGroup( entities.toString());
 		
+		//Define which sources to query
+		//http://sparqles.ai.wu.ac.at/
+		//Stability -> host own SPARQL endpoint.... 
+		List<QuerySource.Source> sources = new ArrayList<QuerySource.Source>();
+		sources.add(QuerySource.Source.DBPedia);
+		sources.add(QuerySource.Source.DBPediaLive);
+//		sources.add(QuerySource.Source.FactForge); //timeouts
+//		sources.add(QuerySource.Source.EEA); //SPARQL 1.0?
+//		sources.add(QuerySource.Source.LinkedMDB); //SPARQL 1.0! 
+		sources.add(QuerySource.Source.Education_UK); //Slow
 		
-//		for (QuerySource.Source s : QuerySource.Source.values()) {
-//			new QuerySource(group, s, entities, getQueryProperties()).start();
-//		}
+		for (QuerySource.Source s : sources) { //QuerySource.Source.values()
+			new QuerySource(group, s, entities, getQueryProperties()).start();
+		}
 		
 		//Wait till all are finished and derive model
 		try {
-			QuerySource[] threads = new QuerySource[group.activeCount()];
+//			QuerySource[] threads = new QuerySource[group.activeCount()];
+			QuerySource[] threads = new QuerySource[sources.size()];
 			group.enumerate(threads);
 			for (int i = 0; i < threads.length; i++) {
-				threads[i].join();
-				model.add(threads[i].getModel()); //Fallback for query errors is empty model
+				if(threads[i] != null){
+					threads[i].join();
+					model.add(threads[i].getModel()); //Fallback for query errors is empty model
+				}
 			}
 		} catch (InterruptedException e) {
 			System.out.println(e.getMessage());
@@ -219,15 +227,20 @@ public class JenaEngine implements QueryEngine {
 					
 		//query each entity separately on local model				
 		for (NamedEntity e : entities) {
-			//construct dictionary for entity type specific properties 
-			Hashtable<String, String> propDic = prepareProperties(qp.get(e.getType()));
+			if (e.getURI() != null && e.getURI().length() > 0){
+				//construct dictionary for entity type specific properties 
+				Hashtable<String, String> propDic = prepareProperties(qp.get(e.getType()));
+				
+				//Construct local query
+				String lq = constructLocalQuery(propDic, e.getURI());		
 			
-			//Construct local query
-			String lq = constructLocalQuery(propDic, e.getURI());		
-		
-			//Execute Query
-			//result.add(executeLocalQuery(lq,propDic,cmodel, e));
-			executeLocalQuery(lq,propDic,infModel, e);	
+				//Execute Query
+				//result.add(executeLocalQuery(lq,propDic,cmodel, e));
+				executeLocalQuery(lq,propDic,infModel, e);	
+			}else{
+				System.out.println(model);
+			}
+			
 		}
 	
 	}
@@ -270,7 +283,8 @@ public class JenaEngine implements QueryEngine {
 			;
 		// 3b) dynamic part
 		for (Entry<String,String> entry: props.entrySet()) {
-			queryString += " OPTIONAL { " + res + " " + PREFIX + entry.getKey() + " ?" + entry.getValue() + ". }";
+//			queryString += " OPTIONAL { " + res + " " + PREFIX + entry.getKey() + " ?" + entry.getValue() + ". }";
+			queryString += " OPTIONAL { " + res + " <" + entry.getKey() + "> ?" + entry.getValue() + ". }";
 		}
 
 		// 3c) Filter
@@ -309,9 +323,9 @@ public class JenaEngine implements QueryEngine {
 		enhDic.put("label", "label");
 		
 		//Parse Query
-		//System.out.println(query);
+//		System.out.println(query);
 		Query q = QueryFactory.create(query); 
-		//System.out.println(q);
+//		System.out.println(q);
 		
 		//Execute Query
 		Long start = System.nanoTime();
@@ -341,8 +355,8 @@ public class JenaEngine implements QueryEngine {
 			String name = e.getRegexName();
 			
 			//construct filter part (same for every part of the union)
-			String filter = " LANGMATCHES(LANG(?l1), 'en')"
-					+ " && LANGMATCHES(LANG(?l2), 'en')"
+			String filter = "(LANG(?l1) = '' || LANGMATCHES(LANG(?l1), 'en'))"
+					+ " && (LANG(?l2) = '' || LANGMATCHES(LANG(?l2), 'en'))"
 					+ " && regex(?l1,'" + name + "')"
 					;
 			
@@ -475,7 +489,9 @@ public class JenaEngine implements QueryEngine {
 			ResultSet results = qe.execSelect(); 
 			while(results.hasNext()) {  
 				QuerySolution sol = results.next();  
-				String s = sol.get("label").toString();
+				//TODO: Change structure to support URI and label
+				//String s = sol.get("label").toString();
+				String s = sol.getResource("p").getURI();
 				props.add(s);
 			}			
 			qe.close();
@@ -577,6 +593,11 @@ public class JenaEngine implements QueryEngine {
 		JenaEngine je = new JenaEngine();
 		String text = "";
 		
+		//test for education UK
+		text = "Is the Headley Park Primary School somehow related to London or Bristol?";
+		runtest(text,null);
+		
+		
 		//1st simple test with all entity types
 //		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
 //		runtest(text,null);
@@ -584,8 +605,8 @@ public class JenaEngine implements QueryEngine {
 //		text = "Mr Trump has said Japan needs to pay more to maintain US troops on its soil.";
 //		runtest(text,null);
 		
-		text = "Mr Abe is stopping in New York on his way to an Asia-Pacific trade summit in Peru.";
-		runtest(text,null);
+//		text = "Mr Abe is stopping in New York on his way to an Asia-Pacific trade summit in Peru.";
+//		runtest(text,null);
 		
 		// This text takes too long - need limit of stuff somewhere
 		//text = "The Kremlin revealed Mr Trump and Mr Putin had discussed Syria and agreed that current Russian-US relations were \"extremely unsatisfactory\"";

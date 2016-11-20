@@ -28,7 +28,7 @@
 	
 	<!-- isPrimaryTopicOf -->
 	<owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/isPrimaryTopicOf">
-        <rdfs:label>isPrimaryTopicOf</rdfs:label>
+        <rdfs:label>is primary topic of</rdfs:label>
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
 		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
 		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Person"/>
@@ -51,7 +51,7 @@
 	 
 	<!-- foundedBy -->
     <owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/foundedBy">
-        <rdfs:label>foundedBy</rdfs:label>
+        <rdfs:label>founded by</rdfs:label>
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
 		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
 		<owl:equivalentProperty rdf:resource="http://dbpedia.org/ontology/foundedBy"/>
@@ -59,7 +59,7 @@
     
 	<!--  makerOf -->
     <owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/makerOf">
-        <rdfs:label>makerOf</rdfs:label>
+        <rdfs:label>maker of</rdfs:label>
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
 		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Person"/>
 		<owl:equivalentProperty rdf:resource="http://xmlns.com/foaf/0.1/made"/>
@@ -67,10 +67,26 @@
 	
 	<!--  distributerOf -->
     <owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/distributerOf">
-        <rdfs:label>distributerOf</rdfs:label>
+        <rdfs:label>distributer of</rdfs:label>
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
 		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
 		<owl:inverseProperty rdf:resource="http://data.linkedmdb.org/resource/movie/film_distributor"/>
+    </owl:ObjectProperty>
+	
+	<!--- locatedIn -->
+	<owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/locatedIn">
+        <rdfs:label>located in</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
+		<owl:equivalentProperty rdf:resource="http://education.data.gov.uk/def/school/districtAdministrative"/>
+    </owl:ObjectProperty>
+	
+	<!--- typeOfOrganisation  -->
+	<owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/typeOfOrganisation">
+        <rdfs:label>type of organisation</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
+		<owl:equivalentProperty rdf:resource="http://education.data.gov.uk/def/school/typeOfEstablishment"/>
     </owl:ObjectProperty>
 	
 	
@@ -92,6 +108,7 @@
 		<owl:equivalentClass rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
 		<owl:equivalentClass rdf:resource="http://schema.org/Organization"/>
 		<owl:equivalentClass rdf:resource="http://data.linkedmdb.org/resource/movie/film_distributor"/>
+		<owl:equivalentClass rdf:resource="http://education.data.gov.uk/def/school/School"/>
         <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
     </owl:Class>
 	
@@ -109,7 +126,8 @@
         <rdfs:label>Location</rdfs:label>
         <owl:equivalentClass rdf:resource="http://dbpedia.org/ontology/Location"/>	
 		<owl:equivalentClass rdf:resource="http://schema.org/Place"/>
-		<owl:equivalentClass rdf:resource="http://data.linkedmdb.org/resource/movie/film_location"/>		
+		<owl:equivalentClass rdf:resource="http://data.linkedmdb.org/resource/movie/film_location"/>	
+		<owl:equivalentClass rdf:resource="http://data.ordnancesurvey.co.uk/ontology/admingeo/CivilAdministrativeArea"/>		
         <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
     </owl:Class>
 	

@@ -9,23 +9,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
-import org.apache.jena.query.QueryParseException;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
-
 import main.java.NEREngine.NamedEntity;
 import main.java.NEREngine.NamedEntity.EntityType;
+import main.java.QueryEngine.BackgroundQueryExecution.QueryType;
 
 public class QuerySource extends Thread{
 	
 	public enum Source {
-	    DBPedia, LinkedMDB
+	    DBPedia 
+	    ,DBPediaLive 
+	    ,FactForge
+	    ,EEA  //European Environment Agency
+	    ,LinkedMDB
+	    ,Education_UK
 	}
 
 	private static HashMap<String, List<String>> uriCache; 
@@ -35,7 +34,7 @@ public class QuerySource extends Thread{
 	private Source source;
 	private List<NamedEntity> entities;
 	private List<String> properties;
-	private boolean isSPARQL10; 
+//	private boolean isSPARQL10; 
 	
 	// ############ Interface ###############
 	
@@ -53,7 +52,7 @@ public class QuerySource extends Thread{
 	
 	//init and query for complete context (independent of EntityType) and requested properties
 	public QuerySource(ThreadGroup group,Source s, List<NamedEntity> entities, List<String> properties){
-		super(group,(s + "_" + entities));
+		super(group,(s + "_" + entities.hashCode()));
 		this.source = s;
 		this.entities = entities;
 		this.properties = properties;
@@ -66,7 +65,7 @@ public class QuerySource extends Thread{
 	}
 	
 	public void run(){
-		this.model = getContextModel(getURICandidates(entities));
+		getContextModel(getURICandidates(entities));
 	}
 	
 	//######## Methods for source specific definitions ##############
@@ -75,33 +74,32 @@ public class QuerySource extends Thread{
 		//  enpoint definition
 		switch (s){
 		case DBPedia:
-			this.endpoint = "http://dbpedia.org/sparql";
-			this.isSPARQL10 = false;
+			this.endpoint = "http://dbpedia.org/sparql"; 
+//			this.isSPARQL10 = false;
+			break;
+		case DBPediaLive:
+			this.endpoint = "http://dbpedia-live.openlinksw.com/sparql/"; 
+			break;
+		case FactForge:
+			this.endpoint = "http://factforge.net/sparql";
+			break;
+		case EEA:
+			this.endpoint = "http://semantic.eea.europa.eu/sparql"; 
 			break;
 		case LinkedMDB:
 			this.endpoint = "http://linkedmdb.org/sparql";
-			this.isSPARQL10 = true;
+//			this.isSPARQL10 = true;
+			break;
+		case Education_UK:
+			this.endpoint = "http://services.data.gov.uk/education/sparql";
 			break;
 		}
 	}
 	
-	private String determineEntityTypeURI(Source s, EntityType et) {
+	private String determineEntityTypeURI(Source s, EntityType et) { 
 		// rdf:type definition
 		String uri = "";
-		switch (s){
-		case DBPedia:
-			switch (et) {
-			case ORGANIZATION:
-				uri = "<http://dbpedia.org/ontology/Organisation>";
-				break;
-			case PERSON:
-				uri = "<http://dbpedia.org/ontology/Person>";
-				break;
-			case LOCATION:
-				uri = "<http://dbpedia.org/ontology/Location>";
-				break;
-			}
-			break;
+		switch (s){	
 		case LinkedMDB:
 			switch (et) {
 			case ORGANIZATION:
@@ -112,6 +110,32 @@ public class QuerySource extends Thread{
 				break;
 			case LOCATION:
 				uri = "<http://data.linkedmdb.org/resource/movie/film_location>";
+				break;
+			}
+			break;
+		case Education_UK:
+			switch (et) {
+			case ORGANIZATION:
+				uri = "<http://education.data.gov.uk/def/school/School>";
+				break;
+			case PERSON:
+				uri = "<http://xmlns.com/foaf/0.1/Person>"; //Actually they don't have persons -> dummy
+				break;
+			case LOCATION:
+				uri = "<http://data.ordnancesurvey.co.uk/ontology/admingeo/CivilAdministrativeArea>";
+				break;
+		}
+		break;
+		default:  //Default is DBPedia, DBPediaLive, FactForge, 
+			switch (et) {
+			case ORGANIZATION:
+				uri = "<http://dbpedia.org/ontology/Organisation>";
+				break;
+			case PERSON:
+				uri = "<http://dbpedia.org/ontology/Person>";
+				break;
+			case LOCATION:
+				uri = "<http://dbpedia.org/ontology/Location>";
 				break;
 			}
 			break;
@@ -136,28 +160,28 @@ public class QuerySource extends Thread{
 				uri_candidates.addAll(uriCache.get(getCacheRef(ne)));
 				System.out.println(source + ": " + ne.getCacheRef() + " found in cache. Count: " + uriCache.get(getCacheRef(ne)).size());
 			}else{
-				if(isSPARQL10){ //SPARQL 1.0 //TODO: BIND causes error
-					queryString = "SELECT DISTINCT ?s ?label ?count WHERE {"
-							+ " ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " + determineEntityTypeURI(source, ne.getType()) + "."
-							+ " ?s <http://www.w3.org/2000/01/rdf-schema#label>  ?l."
-							+ " ?s ?p ?o."
-							+ " FILTER(LANGMATCHES(LANG(?l), 'en') && isURI(?s) && regex(?l,'" + ne.getRegexName() + "') )"
-							+ " BIND(STR(?l) as ?label) BIND(1 as ?count)"
-							+ " }"
-							; 
-				}else{
+//				if(isSPARQL10){ //SPARQL 1.0 // BIND/Alias causes error
+//					queryString = "SELECT DISTINCT ?s ( STR(?l) as ?label ) ( 1 as ?count ) WHERE {"
+//							+ " ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " + determineEntityTypeURI(source, ne.getType()) + "."
+//							+ " ?s <http://www.w3.org/2000/01/rdf-schema#label>  ?l."
+//							+ " ?s ?p ?o."
+//							+ " FILTER(LANGMATCHES(LANG(?l), 'en') && isURI(?s) && regex(?l,'" + ne.getRegexName() + "') )"
+////							+ " BIND(STR(?l) as ?label) BIND(1 as ?count)"
+//							+ " }"
+//							; 
+//				}else{
 					queryString = "SELECT DISTINCT ?s ?label (COUNT(?p) AS ?count) WHERE {"
 							+ " ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " + determineEntityTypeURI(source, ne.getType()) + "."
 							+ " ?s <http://www.w3.org/2000/01/rdf-schema#label>  ?l."
 							+ " ?s ?p ?o."
-							+ " FILTER (LANGMATCHES(LANG(?l), 'en') && isURI(?s) && regex(?l,'" + ne.getRegexName() + "') )"
+							+ " FILTER ((LANG(?l) = '' || LANGMATCHES(LANG(?l), 'en')) && isURI(?s) && regex(?l,'" + ne.getRegexName() + "') )"
 							+ " BIND (STR(?l) as ?label)"// BIND (COUNT(?p) as ?count)"
 							+ " } GROUP BY ?s ?label"
 							; 
-				}
+//				}
 				runQuery = true;
 				System.out.println(source + ": Start query for " + ne.getCacheRef());
-				new BackgroundQueryExecution(group, queryString, endpoint, ne).start();
+				new BackgroundQueryExecution(group, queryString, endpoint, ne, QueryType.SELECT).start();
 			}
 		}
 		
@@ -170,12 +194,17 @@ public class QuerySource extends Thread{
 					threads[i].join();
 					List<QuerySolution> res = threads[i].getSolutions();
 					NamedEntity ne = threads[i].getNamedEntity();
-					if(res != null && res.size() > 0){
+					if(res != null && !res.isEmpty()){
 						//Results found -> if more than 5 -> extended logic						
 						List<String> uris = new ArrayList<String>();
 						if(res.size() <= 5){
 							for (QuerySolution s : res) {
-								uris.add(s.getResource("s").getURI());
+								if(s.contains("s")){
+									uris.add(s.getResource("s").getURI());
+								}else{
+									System.out.println("ERROR - " + source + ": " + ne.getCacheRef() + ": Result contains wrong variable(s): " + s.varNames());
+									System.out.println("ERROR - " + source + ": Query string: " + threads[i].getQueryString());
+								}
 							}
 						}else{
 							uris.addAll(findMostRelevantURIs(res, ne));						
@@ -196,7 +225,7 @@ public class QuerySource extends Thread{
 	
 	
 	// ------- 2) Construct Model based on candidate URIs ------- 
-	private Model getContextModel(List<String> uri_candidates){
+	private void getContextModel(List<String> uri_candidates){
 		Long start = System.nanoTime();	
 		
 //		*Example*
@@ -225,36 +254,54 @@ public class QuerySource extends Thread{
 		List<String> parts = new ArrayList<String>();
 		
 		//Available Properties
-		parts.add("{"
-				+ " VALUES (?p) { (<" + String.join(">) (<", properties) + ">)}"
+		parts.add(" VALUES (?p) { (<" + String.join(">) (<", properties) + ">)}"
 				+ " VALUES (?s) { (<" + String.join(">) (<", uri_candidates) + ">)}"
 				+ " ?s ?p ?o."
-				+ "}");
+				);
 		
 		//Direct Relations
-		parts.add("{"
-				+ " VALUES (?s) { (<" + String.join(">) (<", uri_candidates) + ">)}"
+		parts.add(" VALUES (?s) { (<" + String.join(">) (<", uri_candidates) + ">)}"
 				+ " VALUES (?o) { (<" + String.join(">) (<", uri_candidates) + ">)}"
 				+ " ?s ?p ?o."
-				+ "}");
+				);
 		
 		//Indirect Relations
-		parts.add("{"
-				+ " VALUES (?s) { (<" + String.join(">) (<", uri_candidates) + ">)}"
+		parts.add(" VALUES (?s) { (<" + String.join(">) (<", uri_candidates) + ">)}"
 				+ " VALUES (?e) { (<" + String.join(">) (<", uri_candidates) + ">)}"
 				+ " ?s ?p ?o."
 				+ " ?e ?p2 ?o."
 				+ " FILTER (?s != ?e)"
-				+ "}");
+			    );
 		
 		
 		//https://www.w3.org/TR/2013/REC-sparql11-query-20130321/#construct
-		queryString = "CONSTRUCT { ?s ?p ?o."
+//		queryString = "CONSTRUCT { ?s ?p ?o."
+//				+ " ?s <http://www.w3.org/2000/01/rdf-schema#label> ?ls."
+//				+ " ?p <http://www.w3.org/2000/01/rdf-schema#label> ?lp."
+//				+ " ?o <http://www.w3.org/2000/01/rdf-schema#label> ?lo."
+//				+ " } WHERE { "
+//				+ "{ { " + String.join("} UNION {", parts) + "} } "
+//				+ " OPTIONAL {?s <http://www.w3.org/2000/01/rdf-schema#label> ?ls.}"
+//				+ " OPTIONAL {?p <http://www.w3.org/2000/01/rdf-schema#label> ?lp.}"
+//				+ " OPTIONAL {?o <http://www.w3.org/2000/01/rdf-schema#label> ?lo.}"
+//				+ " FILTER ( (LANG(?ls) = '' || LANGMATCHES(LANG(?ls), 'en')) "
+//				+ " && (LANG(?lp) = '' || LANGMATCHES(LANG(?lp), 'en')) "
+//				+ " && (LANG(?lo) = '' || LANGMATCHES(LANG(?lo), 'en')))"
+//				+ "}"
+//				;
+//			
+//		// execute Query 
+//		this.model = execConstruct(queryString);
+		
+		ThreadGroup group = new ThreadGroup( String.valueOf(parts.toString().hashCode()));
+		
+		for (String part : parts) {
+			queryString = "CONSTRUCT { ?s ?p ?o."
 				+ " ?s <http://www.w3.org/2000/01/rdf-schema#label> ?ls."
 				+ " ?p <http://www.w3.org/2000/01/rdf-schema#label> ?lp."
 				+ " ?o <http://www.w3.org/2000/01/rdf-schema#label> ?lo."
 				+ " } WHERE { "
-				+ "{ " + String.join(" UNION ", parts) + " } "
+				+ part
 				+ " OPTIONAL {?s <http://www.w3.org/2000/01/rdf-schema#label> ?ls.}"
 				+ " OPTIONAL {?p <http://www.w3.org/2000/01/rdf-schema#label> ?lp.}"
 				+ " OPTIONAL {?o <http://www.w3.org/2000/01/rdf-schema#label> ?lo.}"
@@ -263,12 +310,28 @@ public class QuerySource extends Thread{
 				+ " && (LANG(?lo) = '' || LANGMATCHES(LANG(?lo), 'en')))"
 				+ "}"
 				;
-		
-				
+			
+			new BackgroundQueryExecution(group, queryString, endpoint, QueryType.CONSTRUCT).start();  
+//			System.out.println(queryString);
+		}		
+		//--- Wait for results
+
+		try {
+			BackgroundQueryExecution[] threads = new BackgroundQueryExecution[group.activeCount()];
+			group.enumerate(threads);
+			for (int i = 0; i < threads.length; i++) {
+				threads[i].join();
+				if(threads[i].getModel().size() > 0){
+					this.model.add(threads[i].getModel());
+				}else{
+					System.out.println("WARNING - " + source + ": Construct query returned no result: " + threads[i].getQueryString());
+				}
+			}
+		} catch (InterruptedException e) {
+			System.out.println(e.getMessage());
+		}
+	
 		System.out.println(source + ": Queried properties, relations and labels. Model size: " + model.size() + ". Time: " + TimeUnit.NANOSECONDS.toMillis(System.nanoTime()-start) + "ms");
-		
-		// execute Query 
-		return execConstruct(queryString);
 	}
 	
 	
@@ -341,34 +404,6 @@ public class QuerySource extends Thread{
 	    return (longerLength - StringUtils.getLevenshteinDistance(longer, shorter)) / (double) longerLength; 
 	  }
 
-	//Actual execution of construct query to endpoint
-	private Model execConstruct(String queryString) {
-		Model m = ModelFactory.createDefaultModel();
-		
-		Query q = null;		
-		try {
-			q = QueryFactory.create(queryString);
-		} catch (QueryParseException qexc) {
-			System.out.println("ERROR - " + source + " query generation failed! Query string:");
-			System.out.println(queryString);
-			System.out.println(qexc.getMessage());
-			return m;
-		}
-//		System.out.println(q);
-		
-		QueryExecution qe = QueryExecutionFactory.sparqlService(endpoint, q);
-		QueryEngineHTTP qeHttp = (QueryEngineHTTP) qe;
-		qeHttp.setModelContentType("application/rdf+xml");
-		try {
-			m = qe.execConstruct();
-		} catch (Exception exc) {
-			System.out.println("ERROR - " + source + ": Query failed: " + exc.getMessage());
-			System.out.println(queryString);
-		} finally {
-			qe.close();
-		}
-		return m;
-	}
 		
 	
 	// #################################### TEST SECTION #################################################
