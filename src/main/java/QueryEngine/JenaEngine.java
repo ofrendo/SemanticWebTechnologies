@@ -594,9 +594,12 @@ public class JenaEngine implements QueryEngine {
 		String text = "";
 		
 		//test for education UK
-		text = "Is the Headley Park Primary School somehow related to London or Bristol?";
-		runtest(text,null);
+		//text = "Is the Headley Park Primary School somehow related to London or Bristol?";
+		//runtest(text,null);
 		
+		//text = "The BBC's Sanjoy Majumder, in Delhi, says rescuers have recently brought out some survivors, including two children, which brought cheers from onlookers.";
+		text = "She told the Times of India that most of the people travelling with her had been found but that her father was still missing.";
+		runtest(text, null);
 		
 		//1st simple test with all entity types
 //		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";

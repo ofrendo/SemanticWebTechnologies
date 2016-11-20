@@ -47,7 +47,7 @@
 		//var svgVisualization = document.createElement("svg");
 		var svgVisualization = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		svgVisualization.setAttribute("width", 700);
-		svgVisualization.setAttribute("height", 500);
+		svgVisualization.setAttribute("height", 800);
 		svgVisualization.id = "swtSVGVisualization";
 		divContainer.appendChild(svgVisualization);
 
@@ -76,6 +76,9 @@
 	function setPopupContents(selectedText, data) {
 		var divEntityContainer = document.getElementById("swtDivEntityContainer");
 		divEntityContainer.innerHTML = "";
+		var svg = document.getElementById("swtSVGVisualization");
+		svg.innerHTML = "";
+
 		document.getElementById("swtDivPopupHeader").innerHTML = "Entity search: " + selectedText;
 		for (var i=0;i<data.entities.length;i++) {
 			divEntityContainer.appendChild(createEntity(data.entities[i]));
@@ -105,7 +108,7 @@
 				var val = entity.properties[i].value[j];
 
 				// "depiction" is special case
-				if (propertyName === "depiction") {
+				if (propertyName === "depiction" || propertyName === "http://webprotege.stanford.edu/depiction") {
 					depictionSrc = val;
 				}
 				else {
@@ -114,6 +117,11 @@
 					ul.appendChild(li);
 				}
 			}
+		}
+		if (entity.properties.length === 0) {
+			var li = document.createElement("li");
+			li.innerHTML = "No results found.";
+			ul.appendChild(li);
 		}
 
 		divContent.appendChild(ul);
@@ -137,12 +145,15 @@
  	}
 
 	function onSearch() {
-		var selectedText = getSelectedText();
-		var selectedText = "Michael Gove, Iain Duncan Smith and Theresa Villier are among her backers.";
-		//var selectedText = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";		
+		var selectedText = (CONFIG.USE_SELECTED_TEXT === null) ?
+							getSelectedText() :
+							CONFIG.USE_SELECTED_TEXT;
+		
 		if (selectedText.length > 0) {
-			log("Retrieving entities...");
+			var buttonSearch = document.getElementById("swtButtonSearch");
+			buttonSearch.innerHTML = "Search for entities (LOADING...)";
 			Connector.retrieveTriples(selectedText, function(data) {
+				buttonSearch.innerHTML = "Search for entities";
 				console.log(data);
 				setPopupContents(selectedText, data);
 				onPopupShow();

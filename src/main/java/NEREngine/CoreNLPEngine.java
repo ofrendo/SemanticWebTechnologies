@@ -88,8 +88,10 @@ public class CoreNLPEngine implements NEREngine {
             for (CoreLabel token : sentence.get(TokensAnnotation.class)) {
               currNeToken = token.get(NamedEntityTagAnnotation.class);
               String word = token.get(TextAnnotation.class);
-              // Strip out "O"s completely, makes code below easier to understand
-              if (currNeToken.equals("O")) {
+              
+              System.out.println("word=" + word + ", token=" + currNeToken);
+              // Strip out "O"s and NUMBERS completely, makes code below easier to understand
+              if (currNeToken.equals("O") || currNeToken.equals("NUMBER")) {
                 // LOG.debug("Skipping '{}' classified as {}", word, currNeToken);
                 if (!prevNeToken.equals("O") && (sb.length() > 0)) {
                   handleEntity(prevNeToken, sb, tokens);
@@ -169,16 +171,21 @@ public class CoreNLPEngine implements NEREngine {
 	public static void main(String[] args) {
 		NEREngine e = CoreNLPEngine.getInstance();
 		//String text = "This is a test to identify SAP in Walldorf with H. Plattner as founder. What happens with a duplicate of H. Plattner?";
-		String text = "The Kremlin revealed Mr Trump and Mr Putin had discussed Syria and agreed that current Russian-US relations were \"extremely unsatisfactory\".";
+		//String text = "The Kremlin revealed Mr Trump and Mr Putin had discussed Syria and agreed that current Russian-US relations were \"extremely unsatisfactory\".";
+		//String text = "Passenger Ruby Gupta, 20, was travelling to Azamagarh to be married on 1 December.";
+		//String text = "She told the Times of India that most of the people travelling with her had been found but that her father was still missing.";
+		
+		String text = "Indian Prime Minister Narendra Modi tweeted: \"Anguished beyond words on the loss of lives due to the derailing of the Patna-Indore express. My thoughts are with the bereaved families.\"";
 		
 		for (NamedEntity entity : e.getEntitiesFromText(text)) {
 	        System.out.println(entity.getType() + ": " + entity.getName());
 		}
-		System.out.println("====================");
-		text = "Does Stanford's CoreNLP from Stanford University identifies multiple sentences? Simply test it: Mannheim University is located in Baden-Wuerttemberg.";
-		for (NamedEntity entity : e.getEntitiesFromText(text)) {
-	        System.out.println(entity.getType() + ": " + entity.getName());
-		}
+		
+		//System.out.println("====================");
+		//text = "Does Stanford's CoreNLP from Stanford University identifies multiple sentences? Simply test it: Mannheim University is located in Baden-Wuerttemberg.";
+		//for (NamedEntity entity : e.getEntitiesFromText(text)) {
+	    //    System.out.println(entity.getType() + ": " + entity.getName());
+		//}
 
 	}
 }

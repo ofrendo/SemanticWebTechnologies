@@ -17,11 +17,11 @@ var SWT_Visualizer = (function() {
 				pushedUniques[triple.subject] = 1;
 				result.nodes.push({id: triple.subject, group: 1});
 			}
-			// Change group of node if it's a subject
+			// Change group of node if it's a subject and has been pushed as object
 			else if (pushedUniques[triple.subject] !== 1) {
 				for (var i=0;i<result.nodes.length;i++) {
 					if (result.nodes[i].id === triple.subject)
-						result.nodes.group = 1;
+						result.nodes[i].group = 1;
 				}
 			}
 			if (pushedUniques[triple.object] === undefined) {

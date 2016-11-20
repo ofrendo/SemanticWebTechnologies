@@ -1,4 +1,5 @@
 var Connector = (function() {
+	var loading = false;
 
 	function retrieveTriples(inputText, callback) {
 		// https://davidwalsh.name/fetch
@@ -12,11 +13,18 @@ var Connector = (function() {
 			})
 		});
 
-		fetch(request).then(function(response) {
-			return response.json();
-		}).then(function(data) {
-			callback(data);
-		});
+		if (loading === false) {
+			log("Retrieving entities for \"" + inputText + "\"...");
+			loading = true;
+		
+			fetch(request).then(function(response) {
+				loading = false;
+				return response.json();
+			}).then(function(data) {
+				callback(data);
+			});
+		}
+		
 	}
 
 

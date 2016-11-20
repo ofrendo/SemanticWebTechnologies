@@ -79,6 +79,7 @@ public class NamedEntity {
 			  result += "\n    {\"name\": \"" + key + "\", \"value\": [";
 			  // Keys in this hashmap are actually the values we want, not the ints
 			  for (String value : property.keySet()) {
+				  value = value.replace("\n", " ");
 				  result += "\"" + value + "\",";
 			  }
 			  // remove last comma from properties

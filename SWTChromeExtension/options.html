@@ -1,9 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-	
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<script src="js/jquery-3.1.1.min.js"></script>
+	<script src="js/d3.min.js"></script>
+	<script src="js/swt_config.js"></script>
+	<script src="js/swt_connector.js"></script>
+	<script src="js/swt_background.js"></script>
+	<script src="js/swt_visualize.js"></script>
 </head>
 <body>
-	
+<h1>Options page for the SWT Chrome extension</h1>
+<p>The extension is loaded on this page, try it out on one of the following texts by marking it and then clicking on "Search for entities" (upper right):</p>
+
+<ul>
+	<!-- easy test -->
+	<li>This is a test to identify SAP in Walldorf with H. Plattner as founder.</li>
+
+	<!-- good for visualization -->
+	<li>Michael Gove, Iain Duncan Smith and Theresa Villier are among her backers.</li>
+
+	<!-- NER but no results for it -->
+	<li>The BBC's Sanjoy Majumder, in Delhi, says rescuers have recently brought out some survivors, including two children, which brought cheers from onlookers.</li>
+
+	<!-- Check if NER works (should NOT be 20Azamagarh) -->
+	<li>Passenger Ruby Gupta, 20, was travelling to Azamagarh to be married on 1 December.</li>
+
+	<!-- Check if "times of india" works -->
+	<li>She told the Times of India that most of the people travelling with her had been found but that her father was still missing.<li>
+</ul>
+
+
+
 </body>
 </html>
