@@ -26,7 +26,7 @@ public class Server {
 		System.out.println("===================");
 		System.out.println("Result LOD:");
 		JenaEngine je = new JenaEngine();
-		je.queryEntities(list, null);
+		je.queryEntities(list);
 		List<NamedEntity> results = je.getResultEntities();
 		for (NamedEntity e : results){
 			System.out.println(e);	

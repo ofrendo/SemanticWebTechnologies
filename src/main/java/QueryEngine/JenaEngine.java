@@ -42,6 +42,7 @@ public class JenaEngine implements QueryEngine {
 	private InfModel infModel; //Infered model -> combination of raw model and ontology
 	private List<NamedEntity> entities;
 	private QueryProperties qp;
+	private List<QuerySource.Source> sources; 
 	
 	
 	
@@ -51,13 +52,6 @@ public class JenaEngine implements QueryEngine {
 		if(ontoModel == null){
 			ontoModel = loadLocalOntology();
 		}
-
-//		if(model == null){
-//			//That Memory Model doesn't work as expected -> only in memory during JVM lifetime -> restart: no model anymore
-//			model = ModelFactory.createMemModelMaker().openModel("LocalCache", false);
-//			System.out.println("Loaded model of size: " + model.size());
-//			modelChanged = true;
-//		}
 		if(availableProperties == null){
 			availableProperties = readAvailableProperties();
 		}		
@@ -94,32 +88,51 @@ public class JenaEngine implements QueryEngine {
 	 * Query properties with full set of available properties
 	 */
 	@Override
-	public void queryEntities(List<NamedEntity> entities) {
-		queryEntities(entities, availableProperties);
+	public boolean queryEntities(List<NamedEntity> entities) {
+		return queryEntities(entities, null, null);
 	}
 
 	/* (non-Javadoc)
 	 * @see QueryEngine.QueryEngine#queryEntityProperties(java.util.List, java.util.Properties)
 	 * Query properties with custom set of properties
 	 */
-	@Override
-	public void queryEntities(List<NamedEntity> entities, QueryProperties props) {
+	@Override 
+	public boolean queryEntities(List<NamedEntity> entities, QueryProperties props, List<QuerySource.Source> sources) {
 		if(props == null){
 			props = availableProperties;
+		}
+		if(sources == null){
+			//Default source selection
+			//http://sparqles.ai.wu.ac.at/
+			//Stability -> host own SPARQL endpoint.... 
+			sources = new ArrayList<QuerySource.Source>();
+			sources.add(QuerySource.Source.DBPedia);
+			sources.add(QuerySource.Source.DBPediaLive);
+//			sources.add(QuerySource.Source.FactForge); //timeouts
+//			sources.add(QuerySource.Source.EEA); //SPARQL 1.0?
+//			sources.add(QuerySource.Source.LinkedMDB); //SPARQL 1.0! 
+//			sources.add(QuerySource.Source.Education_UK); //Slow
 		}
 		
 		//add copies of entities to ensure that list cannot be change from outside
 		this.entities = copyList(entities);
-				
+		
+		this.sources = sources;
 		this.qp = props;
 		this.model = ModelFactory.createDefaultModel();
 		
 		//Query Sources to build model
 		handleParallelSourceQueries();
+		if(model.size() < 1){
+			System.out.println("ERROR - No matching URIs found across all selected sources!");
+			return false;
+		}
 		
-		//Query local model		
-		handleLocalQueries();		
+		//Query local model
+		handleLocalQueries();
+		//TODO: return false for unsuccessful result
 		
+		return true;		
 	}
 	
 	@Override
@@ -160,23 +173,12 @@ public class JenaEngine implements QueryEngine {
 
 	private void handleParallelSourceQueries() {
 		
-		//Query sources in parallel 
 		System.out.println("Start load from sources...");
 		Long start = System.nanoTime();
+		
+		//Query sources in parallel 
 		ThreadGroup group = new ThreadGroup( entities.toString());
-		
-		//Define which sources to query
-		//http://sparqles.ai.wu.ac.at/
-		//Stability -> host own SPARQL endpoint.... 
-		List<QuerySource.Source> sources = new ArrayList<QuerySource.Source>();
-		sources.add(QuerySource.Source.DBPedia);
-		sources.add(QuerySource.Source.DBPediaLive);
-//		sources.add(QuerySource.Source.FactForge); //timeouts
-//		sources.add(QuerySource.Source.EEA); //SPARQL 1.0?
-//		sources.add(QuerySource.Source.LinkedMDB); //SPARQL 1.0! 
-		sources.add(QuerySource.Source.Education_UK); //Slow
-		
-		for (QuerySource.Source s : sources) { //QuerySource.Source.values()
+		for (QuerySource.Source s : sources) {
 			new QuerySource(group, s, entities, getQueryProperties()).start();
 		}
 		
@@ -594,8 +596,12 @@ public class JenaEngine implements QueryEngine {
 		String text = "";
 		
 		//test for education UK
-		//text = "Is the Headley Park Primary School somehow related to London or Bristol?";
-		//runtest(text,null);
+		List<QuerySource.Source> sources = new ArrayList<QuerySource.Source>();
+		sources.add(QuerySource.Source.DBPedia);
+		sources.add(QuerySource.Source.DBPediaLive);
+		sources.add(QuerySource.Source.Education_UK);
+		text = "Is the Headley Park Primary School somehow related to London or Bristol?";
+		runtest(text,null,sources);
 		
 		//text = "The BBC's Sanjoy Majumder, in Delhi, says rescuers have recently brought out some survivors, including two children, which brought cheers from onlookers.";
 		text = "She told the Times of India that most of the people travelling with her had been found but that her father was still missing.";
@@ -679,8 +685,11 @@ public class JenaEngine implements QueryEngine {
 		System.out.println(je.getAvailableProperties(EntityType.LOCATION));
 		*/
 	}
-
 	private static void runtest(String text, QueryProperties qp) {
+		runtest(text, qp, null);
+	}
+
+	private static void runtest(String text, QueryProperties qp, List<QuerySource.Source> sources) {
 		// 1) NER
 		List<NamedEntity> list = CoreNLPEngine.getInstance().getEntitiesFromText(text);
 		System.out.println("Result NER:");
@@ -692,7 +701,7 @@ public class JenaEngine implements QueryEngine {
 		System.out.println("===================");
 		System.out.println("Result LOD:");
 		JenaEngine je = new JenaEngine();
-		je.queryEntities(list, qp);
+		je.queryEntities(list, qp, sources);
 		for (NamedEntity e : je.getResultEntities()){
 			System.out.println(e);	
 			System.out.println(e.toJSONString());
