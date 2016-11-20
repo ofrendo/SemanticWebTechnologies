@@ -16,9 +16,12 @@ var Connector = (function() {
 		if (loading === false) {
 			log("Retrieving entities for \"" + inputText + "\"...");
 			loading = true;
-		
+			var buttonSearch = document.getElementById("swtButtonSearch");
+			buttonSearch.innerHTML = "Search for entities (LOADING...)";
+
 			fetch(request).then(function(response) {
 				loading = false;
+				buttonSearch.innerHTML = "Search for entities";
 				return response.json();
 			}).then(function(data) {
 				callback(data);

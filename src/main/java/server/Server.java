@@ -76,8 +76,8 @@ public class Server {
 	
 	public static void main(String[] args) {
 
-		//String testInput = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
-		String testInput = "The BBC's Sanjoy Majumder, in Delhi, says rescuers have recently brought out some survivors, including two children, which brought cheers from onlookers.";
+		String testInput = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
+		//String testInput = "The BBC's Sanjoy Majumder, in Delhi, says rescuers have recently brought out some survivors, including two children, which brought cheers from onlookers.";
 		String output = processRequest(testInput);
 		System.out.println(output);
 	

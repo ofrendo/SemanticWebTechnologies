@@ -151,10 +151,7 @@
 		selectedText = sanitizeInput(selectedText);
 
 		if (selectedText.length > 0) {
-			var buttonSearch = document.getElementById("swtButtonSearch");
-			buttonSearch.innerHTML = "Search for entities (LOADING...)";
 			Connector.retrieveTriples(selectedText, function(data) {
-				buttonSearch.innerHTML = "Search for entities";
 				console.log(data);
 				setPopupContents(selectedText, data);
 				onPopupShow();
