@@ -202,8 +202,7 @@ public class QuerySource extends Thread{
 								if(s.contains("s")){
 									uris.add(s.getResource("s").getURI());
 								}else{
-									System.out.println("ERROR - " + source + ": " + ne.getCacheRef() + ": Result contains wrong variable(s): " + s.varNames());
-									System.out.println("ERROR - " + source + ": Query string: " + threads[i].getQueryString());
+									System.out.println("WARNING - " + source + ": " + ne.getCacheRef() + ": Result contains wrong variable(s). Query: " + threads[i].getQueryString());
 								}
 							}
 						}else{
@@ -275,23 +274,6 @@ public class QuerySource extends Thread{
 		
 		
 		//https://www.w3.org/TR/2013/REC-sparql11-query-20130321/#construct
-//		queryString = "CONSTRUCT { ?s ?p ?o."
-//				+ " ?s <http://www.w3.org/2000/01/rdf-schema#label> ?ls."
-//				+ " ?p <http://www.w3.org/2000/01/rdf-schema#label> ?lp."
-//				+ " ?o <http://www.w3.org/2000/01/rdf-schema#label> ?lo."
-//				+ " } WHERE { "
-//				+ "{ { " + String.join("} UNION {", parts) + "} } "
-//				+ " OPTIONAL {?s <http://www.w3.org/2000/01/rdf-schema#label> ?ls.}"
-//				+ " OPTIONAL {?p <http://www.w3.org/2000/01/rdf-schema#label> ?lp.}"
-//				+ " OPTIONAL {?o <http://www.w3.org/2000/01/rdf-schema#label> ?lo.}"
-//				+ " FILTER ( (LANG(?ls) = '' || LANGMATCHES(LANG(?ls), 'en')) "
-//				+ " && (LANG(?lp) = '' || LANGMATCHES(LANG(?lp), 'en')) "
-//				+ " && (LANG(?lo) = '' || LANGMATCHES(LANG(?lo), 'en')))"
-//				+ "}"
-//				;
-//			
-//		// execute Query 
-//		this.model = execConstruct(queryString);
 		
 		ThreadGroup group = new ThreadGroup( String.valueOf(parts.toString().hashCode()));
 		
