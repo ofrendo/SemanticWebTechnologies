@@ -6,9 +6,9 @@ Report for our 3rd semester SWT project
 ## Server
 Bodies are in JSON.
 
-Get triples for a text
+### Get triples for a text
 ```
-POST https://semantic-web-technologies.herokuapp.com/RetrieveTriples
+POST https://localhost:8443/RetrieveTriples
 
 Request body:
 This is a test to identify SAP in Walldorf with H. Plattner as founder.
@@ -43,4 +43,40 @@ Response body:
 		{...}
 	]
 ```
+
+### Get available query properties
+```
+GET https://localhost:8443/RetrieveAvailableProperties
+
+Response body:
+[
+  {
+    "entityType": "Organization",
+    "properties": [
+      {"uri": "http://webprotege.stanford.edu/typeOfOrganisation",
+       "label": "type of organisation",
+       "id": "1583284149"},
+      {"uri": "http://webprotege.stanford.edu/locatedIn",
+       "label": "located in",
+       "id": "116857677"},
+      {"uri": "http://webprotege.stanford.edu/distributerOf",
+       "label": "distributer of",
+       "id": "1517547678"},
+      {"uri": "http://webprotege.stanford.edu/foundedBy",
+       "label": "founded by",
+       "id": "1524249358"},
+      {"uri": "http://webprotege.stanford.edu/homepage",
+       "label": "homepage",
+       "id": "165884424"},
+      {"uri": "http://webprotege.stanford.edu/isPrimaryTopicOf",
+       "label": "is primary topic of",
+       "id": "607078104"},
+      {"uri": "http://webprotege.stanford.edu/depiction",
+       "label": "depiction",
+       "id": "309789491"}
+    ]
+  },  
+  {...}, 
+  {...}
+]
 

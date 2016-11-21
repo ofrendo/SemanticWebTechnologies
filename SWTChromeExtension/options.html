@@ -8,6 +8,7 @@
 	<script src="js/swt_connector.js"></script>
 	<script src="js/swt_background.js"></script>
 	<script src="js/swt_visualize.js"></script>
+
 </head>
 <body>
 <h1>Options page for the SWT Chrome extension</h1>
@@ -35,7 +36,15 @@
 	<li>AirBnB, the site that lets you rent out your spare rooms, or indeed your entire home, to tourists, is one of Silicon Valley’s brightest start-ups - a great idea, executed effortlessly.</li>	
 </ul>
 
+<h2>Please select the properties that should be shown</h2>
+<ul>
+	<li>Settings are stored upon clicking "save"</li>
+	<li>If no boxes are checked for an entity type, all properties will be requested</li>
+</ul>
+<div id="divAvailablePropertiesContainer"></div>
+<button id="buttonSaveAvailableProperties">Save</button>
+<button id="buttonResetAvailableProperties">Reset</button>
 
-
+<script src="js/swt_options.js"></script>
 </body>
 </html>

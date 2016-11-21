@@ -70,7 +70,7 @@ public class NamedEntity {
 	  public String toJSONString() {
 		  String result = "{\n" +
 				 "  \"entityName\": \"" + name + "\",\n" +
-				 "  \"entityType\": \"" + type + "\",\n" +
+				 "  \"entityType\": \"" + type.getName() + "\",\n" +
 				 "  \"URI\": \"" + uri + "\",\n" + 
 				 "  \"properties\": [";
 		  
@@ -144,9 +144,18 @@ public class NamedEntity {
 	  
 	  
 	  public enum EntityType {
-		    PERSON, 
-		    ORGANIZATION, 
-		    LOCATION
-		    //, DATE
-		}
+		  PERSON("Person"), 
+		  ORGANIZATION("Organization"), 
+		  LOCATION("Location");
+		  //, DATE
+		  
+		  private String name;
+		  private EntityType(String name) {
+			  this.name = name;
+		  }
+		  public String getName() {
+			  return name;
+		  }
+		  
+	  }
 }

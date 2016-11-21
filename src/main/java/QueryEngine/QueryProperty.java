@@ -35,6 +35,14 @@ public class QueryProperty {
 		return label;
 	}
 	
+	public String toJSONString() {
+		String result = "";
+		result += "      {\"uri\": \"" + this.getUri() + "\",\n";
+		result += "       \"label\": \"" + this.getLabel() + "\",\n";
+		result += "       \"id\": \"" + this.getId() + "\"}";
+		return result;
+	}
+	
 	public boolean equals(Object o){
 		  if(o != null && o.getClass() == QueryProperty.class){
 			  QueryProperty qp = (QueryProperty)o;

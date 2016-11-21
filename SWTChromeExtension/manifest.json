@@ -8,7 +8,7 @@
 	"options_page": "options.html",
 	
 	"permissions": [
-	
+		"storage"
 	],
 	
 	"content_scripts": [

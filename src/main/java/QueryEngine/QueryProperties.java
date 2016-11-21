@@ -62,7 +62,25 @@ public class QueryProperties{
 	}
 	
 	public String toJSONString() {
-		 //TODO: Olli
-		 return null;
+		 String result = "[\n";
+		 for (EntityType et : map.keySet()) {
+			 result += "  {\n";
+			 result += "    \"entityType\": \"" + et.getName() + "\",\n";
+			 result += "    \"properties\": [\n";
+			 
+			 for (QueryProperty q : map.get(et)) {
+				 result += q.toJSONString();
+				 result += ",\n";
+			 }
+			 //Remove last comma
+			 result = result.substring(0, result.length() -2);
+			 result += "\n    ]";
+			 result += "\n  },";
+		 }
+		 // Remove last comma
+		 result = result.substring(0, result.length() -1);
+		 result += "]";
+		 
+		 return result;
 	}
 }

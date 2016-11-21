@@ -5,13 +5,23 @@
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
   
-   <servlet>
+  <servlet>
     <servlet-name>RetrieveTriples</servlet-name>
     <servlet-class>main.java.server.RetrieveTriples</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>RetrieveTriples</servlet-name>
     <url-pattern>/RetrieveTriples</url-pattern>
+  </servlet-mapping>
+
+
+  <servlet>
+  	<servlet-name>RetrieveAvailableProperties</servlet-name>
+    <servlet-class>main.java.server.RetrieveAvailableProperties</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RetrieveAvailableProperties</servlet-name>
+    <url-pattern>/RetrieveAvailableProperties</url-pattern>
   </servlet-mapping>
   
 
