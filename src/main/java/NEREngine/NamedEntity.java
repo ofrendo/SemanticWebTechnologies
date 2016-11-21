@@ -99,7 +99,7 @@ public class NamedEntity {
 	  
 	  public String getRegexName(){
 		  //return ("(^.{0,5}\\\\s+|^)" + name.replace(".", ".*") + "((\\\\s+.{0,5}$)|$)");
-		  return ("(^.{0,10}\\\\s+|^)" + name.replace(".", ".*") + "((\\\\s+.{0,5}(\\\\(.*\\\\))?$)|$)");
+		  return ("(^.{0,10}\\\\s+|^)" + name.replace(".", ".*") + "((\\\\s+.{0,10}(\\\\(.*\\\\))?$)|$)");
 	  }
 	  
 	  //add property values via copy

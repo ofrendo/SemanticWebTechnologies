@@ -34,6 +34,7 @@
 		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Person"/>
 		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Location"/>
 		<owl:equivalentProperty rdf:resource="http://xmlns.com/foaf/0.1/isPrimaryTopicOf"/>
+		<owl:equivalentProperty rdf:resource="http://xmlns.com/foaf/0.1/page"/>
     </owl:ObjectProperty> 
 	
 	<!-- homepage -->
@@ -47,7 +48,17 @@
 		<owl:equivalentProperty rdf:resource="http://dbpedia.org/property/homepage"/>
 		<owl:equivalentProperty rdf:resource="http://dbpedia.org/property/website"/>
     </owl:ObjectProperty>
-	 
+	
+	<!-- seeAlso -->
+    <owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/seeAlso">
+        <rdfs:label>see Also</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Person"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Location"/>
+		<owl:equivalentProperty rdf:resource="http://www.w3.org/2000/01/rdf-schema#seeAlso"/>
+    </owl:ObjectProperty>
+	
 	 
 	<!-- foundedBy -->
     <owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/foundedBy">
@@ -89,7 +100,15 @@
 		<owl:equivalentProperty rdf:resource="http://education.data.gov.uk/def/school/typeOfEstablishment"/>
     </owl:ObjectProperty>
 	
-	
+	<!--- popularity  -->
+	<owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/popularity">
+        <rdfs:label>popularity</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Person"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Location"/>
+		<owl:equivalentProperty rdf:resource="http://iserve.kmi.open.ac.uk/ns/msm-nfp#hasPopularity"/>
+    </owl:ObjectProperty>
 	
 	
 	

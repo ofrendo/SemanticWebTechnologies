@@ -158,4 +158,33 @@ public class BackgroundQueryExecution extends Thread {
 		}
 		return m;
 	}
+	
+	public static void main(String[] args) {
+		String endpoint = "http://iserve.kmi.open.ac.uk/iserve/sparql";
+		String query = ""; 
+//		query = "SELECT DISTINCT ?t WHERE {"
+//				+ "?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?t"
+//				+ "}";
+		
+		query = "SELECT DISTINCT ?s ?p ?o WHERE {"
+				+ "VALUES (?s) { (<http://iserve.kmi.open.ac.uk/iserve/id/providers/provider2204>) (<http://dbpedia.org/resource/Brown_University>) (<http://www.wikidata.org/entity/Q49114>) (<http://sw.cyc.com/concept/Mx4rvVjBf5wpEbGdrcN5Y29ycA>) (<http://rdf.freebase.com/ns/m.01bm_>) (<http://yago-knowledge.org/resource/Brown_University>) (<http://sws.geonames.org/5221119/>)}"
+				+ "VALUES (?p) { (<http://dbpedia.org/ontology/foundedBy>) (<http://education.data.gov.uk/def/school/districtAdministrative>) (<http://www.w3.org/2000/01/rdf-schema#seeAlso>) (<http://dbpedia.org/property/website>) (<http://xmlns.com/foaf/0.1/made>) (<http://xmlns.com/foaf/0.1/depiction>) (<http://xmlns.com/foaf/0.1/homepage>) (<http://education.data.gov.uk/def/school/typeOfEstablishment>) (<http://xmlns.com/foaf/0.1/page>) (<http://iserve.kmi.open.ac.uk/ns/msm-nfp#hasPopularity>) (<http://xmlns.com/foaf/0.1/isPrimaryTopicOf>) (<http://dbpedia.org/property/homepage>)}"
+//				+ "?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Organization>."
+				+ "?s ?p ?o."
+				+ "} LIMIT 200";
+		
+
+		
+		query = "CONSTRUCT { ?s ?p ?o. ?s <http://www.w3.org/2000/01/rdf-schema#label> ?ls. ?p <http://www.w3.org/2000/01/rdf-schema#label> ?lp. ?o <http://www.w3.org/2000/01/rdf-schema#label> ?lo. } WHERE {  VALUES (?p) { (<http://dbpedia.org/ontology/foundedBy>) (<http://education.data.gov.uk/def/school/districtAdministrative>) (<http://www.w3.org/2000/01/rdf-schema#seeAlso>) (<http://dbpedia.org/property/website>) (<http://xmlns.com/foaf/0.1/made>) (<http://xmlns.com/foaf/0.1/depiction>) (<http://xmlns.com/foaf/0.1/homepage>) (<http://education.data.gov.uk/def/school/typeOfEstablishment>) (<http://xmlns.com/foaf/0.1/page>) (<http://iserve.kmi.open.ac.uk/ns/msm-nfp#hasPopularity>) (<http://xmlns.com/foaf/0.1/isPrimaryTopicOf>) (<http://dbpedia.org/property/homepage>)} VALUES (?s) { (<http://iserve.kmi.open.ac.uk/iserve/id/providers/provider2204>) (<http://dbpedia.org/resource/Brown_University>) (<http://www.wikidata.org/entity/Q49114>) (<http://sw.cyc.com/concept/Mx4rvVjBf5wpEbGdrcN5Y29ycA>) (<http://rdf.freebase.com/ns/m.01bm_>) (<http://yago-knowledge.org/resource/Brown_University>) (<http://sws.geonames.org/5221119/>)} ?s ?p ?o. OPTIONAL {?s <http://www.w3.org/2000/01/rdf-schema#label> ?ls.} OPTIONAL {?p <http://www.w3.org/2000/01/rdf-schema#label> ?lp.} OPTIONAL {?o <http://www.w3.org/2000/01/rdf-schema#label> ?lo.}}";
+		QueryExecution qe = QueryExecutionFactory.sparqlService(endpoint, query);
+		QueryEngineHTTP qeHttp = (QueryEngineHTTP) qe;
+		qeHttp.setModelContentType("application/rdf+xml");
+		
+//		ResultSet r = qe.execSelect();
+//		while(r.hasNext()) {  
+//			System.out.println(r.nextSolution());
+//		}
+		
+		System.out.println(qe.execConstruct());
+	}
 }

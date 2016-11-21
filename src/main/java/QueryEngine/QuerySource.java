@@ -25,6 +25,8 @@ public class QuerySource extends Thread{
 	    ,EEA  //European Environment Agency
 	    ,LinkedMDB
 	    ,Education_UK
+	    ,DataGovUk
+	    ,IServe
 	}
 
 	private static HashMap<String, List<String>> uriCache; 
@@ -103,7 +105,14 @@ public class QuerySource extends Thread{
 		case Education_UK:
 			this.endpoint = "http://services.data.gov.uk/education/sparql";
 			break;
+		case DataGovUk:
+			this.endpoint = "http://services.data.gov.uk/reference/sparql";
+			break;
+		case IServe:
+			this.endpoint = "http://iserve.kmi.open.ac.uk/iserve/sparql";
+			break;
 		}
+		
 	}
 	
 	private String determineEntityTypeURI(Source s, EntityType et) { 
@@ -129,10 +138,34 @@ public class QuerySource extends Thread{
 				uri = "<http://education.data.gov.uk/def/school/School>";
 				break;
 			case PERSON:
-				uri = "<http://xmlns.com/foaf/0.1/Person>"; //Actually they don't have persons -> dummy
+				uri = ""; // don't have persons 
 				break;
 			case LOCATION:
 				uri = "<http://data.ordnancesurvey.co.uk/ontology/admingeo/CivilAdministrativeArea>";
+				break;
+		}
+		case DataGovUk:
+			switch (et) {
+			case ORGANIZATION:
+				uri = "<http://www.w3.org/ns/org#Organization>";
+				break;
+			case PERSON:
+				uri = "<http://xmlns.com/foaf/0.1/Person>"; 
+				break;
+			case LOCATION:
+				uri = ""; //have no location
+				break;
+		}
+		case IServe:
+			switch (et) {
+			case ORGANIZATION:
+				uri = "<http://schema.org/Organization>";
+				break;
+			case PERSON:
+				uri = ""; //have no persons
+				break;
+			case LOCATION:
+				uri = ""; //have no location
 				break;
 		}
 		break;
@@ -169,7 +202,7 @@ public class QuerySource extends Thread{
 				//Source specific cache based on NamedEntity name -> save regex queries
 				uri_candidates.addAll(uriCache.get(getCacheRef(ne)));
 				System.out.println(source + ": " + ne.getCacheRef() + " found in cache. Count: " + uriCache.get(getCacheRef(ne)).size());
-			}else{
+			}else if(determineEntityTypeURI(source, ne.getType()) != ""){
 //				if(isSPARQL10){ //SPARQL 1.0 // BIND/Alias causes error
 //					queryString = "SELECT DISTINCT ?s ( STR(?l) as ?label ) ( 1 as ?count ) WHERE {"
 //							+ " ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " + determineEntityTypeURI(source, ne.getType()) + "."
@@ -303,12 +336,12 @@ public class QuerySource extends Thread{
 				+ " ?o <http://www.w3.org/2000/01/rdf-schema#label> ?lo."
 				+ " } WHERE { "
 				+ part
-				+ " OPTIONAL {?s <http://www.w3.org/2000/01/rdf-schema#label> ?ls.}"
-				+ " OPTIONAL {?p <http://www.w3.org/2000/01/rdf-schema#label> ?lp.}"
-				+ " OPTIONAL {?o <http://www.w3.org/2000/01/rdf-schema#label> ?lo.}"
-				+ " FILTER ( (LANG(?ls) = '' || LANGMATCHES(LANG(?ls), 'en')) "
-				+ " && (LANG(?lp) = '' || LANGMATCHES(LANG(?lp), 'en')) "
-				+ " && (LANG(?lo) = '' || LANGMATCHES(LANG(?lo), 'en')))"
+				+ " OPTIONAL {?s <http://www.w3.org/2000/01/rdf-schema#label> ?ls. FILTER (LANG(?ls) = '' || LANGMATCHES(LANG(?ls), 'en'))}"
+				+ " OPTIONAL {?p <http://www.w3.org/2000/01/rdf-schema#label> ?lp. FILTER (LANG(?lp) = '' || LANGMATCHES(LANG(?lp), 'en'))}"
+				+ " OPTIONAL {?o <http://www.w3.org/2000/01/rdf-schema#label> ?lo. FILTER (LANG(?lo) = '' || LANGMATCHES(LANG(?lo), 'en'))}"
+//				+ " FILTER ( (LANG(?ls) = '' || LANGMATCHES(LANG(?ls), 'en')) "
+//				+ " && (LANG(?lp) = '' || LANGMATCHES(LANG(?lp), 'en')) "
+//				+ " && (LANG(?lo) = '' || LANGMATCHES(LANG(?lo), 'en')))"
 				+ "}"
 				;
 			

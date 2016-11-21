@@ -5,7 +5,6 @@ package main.java.QueryEngine;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -99,6 +98,10 @@ public class JenaEngine implements QueryEngine {
 	 */
 	@Override 
 	public boolean queryEntities(List<NamedEntity> entities, QueryProperties props, List<QuerySource.Source> sources) {
+		if(entities == null || entities.isEmpty()){
+			System.out.println("ERROR - No named entities provided!");
+			return false;
+		}
 		if(props == null){
 			props = availableProperties;
 		}
@@ -113,6 +116,8 @@ public class JenaEngine implements QueryEngine {
 //			sources.add(QuerySource.Source.EEA); //SPARQL 1.0?
 //			sources.add(QuerySource.Source.LinkedMDB); //SPARQL 1.0! 
 //			sources.add(QuerySource.Source.Education_UK); //Slow
+//			sources.add(QuerySource.Source.DataGovUk); //only internal references... nothing we can use
+			sources.add(QuerySource.Source.IServe);
 		}
 		
 		//add copies of entities to ensure that list cannot be change from outside
@@ -141,8 +146,12 @@ public class JenaEngine implements QueryEngine {
 	}
 	
 	@Override
-	public List<String[]> getContextTriples(){		
-		return queryContextTriples(model); //independent of own ontology
+	public List<String[]> getContextTriples(){
+		if(model != null && model.size() > 0){
+			return queryContextTriples(model); //independent of own ontology
+		}else{
+			return new ArrayList<String[]>();
+		}
 	}	
 	
 
@@ -150,8 +159,10 @@ public class JenaEngine implements QueryEngine {
 	//######################### Private methods doing actual work ##########################################
 	private List<NamedEntity> copyList(List<NamedEntity> entities){
 		List<NamedEntity> copy = new ArrayList<NamedEntity>();
-		for (NamedEntity ne : entities) {
-			copy.add(new NamedEntity(ne));
+		if(entities != null){
+			for (NamedEntity ne : entities) {
+				copy.add(new NamedEntity(ne));
+			}
 		}
 		return copy;		
 	}
@@ -592,7 +603,10 @@ public class JenaEngine implements QueryEngine {
 //		text = "She told the Times of India that most of the people travelling with her had been found but that her father was still missing."; // No Organization!
 //		runtest(text);
 		
-		text = "She told the german Spiegel that most of the people travelling with her had been found but that her father was still missing."; // No Organization!
+//		text = "She told the german Spiegel that most of the people travelling with her had been found but that her father was still missing.";
+//		runtest(text);
+		
+		text = "Jonas joins the Brown University?";
 		runtest(text);
 		
 		//1st simple test with all entity types
