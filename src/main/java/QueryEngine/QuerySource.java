@@ -447,6 +447,7 @@ public class QuerySource extends Thread{
 	 */
 	public static void main(String[] args) {
 		System.out.println(String.valueOf(Math.abs("ztewfavbdhjsfd ndsfvg<hjkdölmf".hashCode())));
+		System.out.println(String.format("%,.2f",Double.parseDouble("185000000.00")));
 		
 	}
 }

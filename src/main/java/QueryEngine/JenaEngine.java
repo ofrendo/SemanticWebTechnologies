@@ -19,6 +19,7 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.reasoner.ReasonerRegistry;
 import org.apache.jena.util.FileManager;
 
@@ -449,11 +450,33 @@ public class JenaEngine implements QueryEngine {
 			k = new String(); 
 			k = prop.getUri();
 			if(tuple.contains(prop.getId())){
-				v = tuple.get(prop.getId()).toString();
+				RDFNode node = tuple.get(prop.getId());
+				
+				if(node.isLiteral()){
+					v = node.asLiteral().getString();
+					if(isNumeric(v) && v.contains(".")){ //double
+						v = String.format("%,.2f", Double.parseDouble(v)) + " (" + node.asLiteral().getDatatypeURI() + ")";
+					}
+				}else{
+					v = node.toString();
+				}
 				ne.addPropertyValue(k, v, 1);				
 			}
 		}
 		
+	}
+	
+	private boolean isNumeric(String str)  
+	{  
+	  try  
+	  {  
+	    double d = Double.parseDouble(str);  
+	  }  
+	  catch(NumberFormatException nfe)  
+	  {  
+	    return false;  
+	  }  
+	  return true;  
 	}
 
 
@@ -607,11 +630,15 @@ public class JenaEngine implements QueryEngine {
 //		runtest(text);
 		
 //		text = "Jonas joins the Brown University?";
+//		text = "Michael Sherwood quits Goldman Sachs role";
 //		runtest(text);
 		
 		//1st simple test with all entity types
 //		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
 //		runtest(text);
+		
+		text = "Michael Sherwood quits Goldman Sachs role";
+		runtest(text);
 		
 //		text = "Mr Trump has said Japan needs to pay more to maintain US troops on its soil.";
 //		runtest(text);
