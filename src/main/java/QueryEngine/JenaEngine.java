@@ -606,8 +606,8 @@ public class JenaEngine implements QueryEngine {
 //		text = "She told the german Spiegel that most of the people travelling with her had been found but that her father was still missing.";
 //		runtest(text);
 		
-		text = "Jonas joins the Brown University?";
-		runtest(text);
+//		text = "Jonas joins the Brown University?";
+//		runtest(text);
 		
 		//1st simple test with all entity types
 //		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
@@ -657,20 +657,20 @@ public class JenaEngine implements QueryEngine {
 //		
 //		runtest(text,props,null);
 		
-		/*
-		// 4th TEST: Heikos example
-		//some trouble with special characters
-		text = "Zu den verdaechtigen gehört Walter K., ein ehemaliger Fußballprofi aus Stuttgart. "
-				+ "K. spielte zweitweise sogar in der deutschen Nationalmannschaft, nach seiner Karrier "
-				+ "betrieb er für die Allianz ein Versicherungsbüro.";
-		runtest(text);
 		
-		// 4th TEST: Heikos example in english
-		//some trouble with special characters rertieved through stuttgart
-		text = "The suspect Walter K. is a former soccer player from Stuttgart. "
-				+ "After his carrer he had a insurance office for Allianz.";
-		runtest(text);
-		*/
+//		// 4th TEST: Heikos example
+//		//some trouble with special characters
+//		text = "Zu den verdaechtigen gehört Walter K., ein ehemaliger Fußballprofi aus Stuttgart. "
+//				+ "K. spielte zweitweise sogar in der deutschen Nationalmannschaft, nach seiner Karrier "
+//				+ "betrieb er für die Allianz ein Versicherungsbüro.";
+//		runtest(text);
+//		
+//		// 4th TEST: Heikos example in english
+//		//some trouble with special characters rertieved through stuttgart
+//		text = "The suspect Walter K. is a former soccer player from Stuttgart. "
+//				+ "After his carrer he had a insurance office for Allianz.";
+//		runtest(text);
+		
 
 		
 		// ----- Simple test without NER
