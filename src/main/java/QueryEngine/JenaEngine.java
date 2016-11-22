@@ -451,8 +451,12 @@ public class JenaEngine implements QueryEngine {
 			k = prop.getUri();
 			if(tuple.contains(prop.getId())){
 				RDFNode node = tuple.get(prop.getId());
-				
 				if(node.isLiteral()){
+					if (node.asLiteral().getLanguage() != null && !node.asLiteral().getLanguage().equals("en") && !node.asLiteral().getLanguage().equals("")) {
+//						System.out.println("Skipped language literal: " + node.asLiteral().getLanguage());
+						continue;
+					}
+					
 					v = node.asLiteral().getString();
 					if(isNumeric(v) && v.contains(".")){ //double
 						v = String.format("%,.2f", Double.parseDouble(v)) + " (" + node.asLiteral().getDatatypeURI() + ")";
@@ -634,11 +638,11 @@ public class JenaEngine implements QueryEngine {
 //		runtest(text);
 		
 		//1st simple test with all entity types
-//		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
-//		runtest(text);
-		
-		text = "Michael Sherwood quits Goldman Sachs role";
+		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
 		runtest(text);
+		
+//		text = "Michael Sherwood quits Goldman Sachs role";
+//		runtest(text);
 		
 //		text = "Mr Trump has said Japan needs to pay more to maintain US troops on its soil.";
 //		runtest(text);

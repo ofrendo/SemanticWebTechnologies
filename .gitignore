@@ -3,3 +3,5 @@
 /lib/stanford-corenlp-3.6.0-models.jar
 /target/
 nginx-1.10.2/logs/nginx.pid
+nginx-1.10.2/logs/nginx.pid
+nginx-1.10.2/logs/nginx.pid

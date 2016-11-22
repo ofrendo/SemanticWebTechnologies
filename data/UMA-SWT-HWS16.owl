@@ -83,15 +83,7 @@
 		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
 		<owl:inverseProperty rdf:resource="http://data.linkedmdb.org/resource/movie/film_distributor"/>
     </owl:ObjectProperty>
-	
-	<!--- locatedIn -->
-	<owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/locatedIn">
-        <rdfs:label>located in</rdfs:label>
-        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
-		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
-		<owl:equivalentProperty rdf:resource="http://education.data.gov.uk/def/school/districtAdministrative"/>
-    </owl:ObjectProperty>
-	
+		
 	<!--- typeOfOrganisation  -->
 	<owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/typeOfOrganisation">
         <rdfs:label>type of organisation</rdfs:label>
@@ -136,12 +128,67 @@
 		<owl:equivalentProperty rdf:resource="http://dbpedia.org/ontology/networth"/>
     </owl:ObjectProperty>
 	
-	<!--- residence  -->
+	<!--- hasLocation  -->
 	<owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/residence">
-        <rdfs:label>networth</rdfs:label>
+        <rdfs:label>has location</rdfs:label>
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
 		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Person"/>
 		<owl:equivalentProperty rdf:resource="http://dbpedia.org/ontology/residence"/>
+		<owl:equivalentProperty rdf:resource="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation"/>
+		<owl:equivalentProperty rdf:resource="http://education.data.gov.uk/def/school/districtAdministrative"/>
+    </owl:ObjectProperty>
+	
+	
+	<!--- indsutry  -->
+	<owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/industry">
+        <rdfs:label>industry</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
+		<owl:equivalentProperty rdf:resource="http://dbpedia.org/ontology/industry"/>
+    </owl:ObjectProperty>
+	
+	<!--- netIncome  -->
+	<owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/netIncome">
+        <rdfs:label>net income</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
+		<owl:equivalentProperty rdf:resource="http://dbpedia.org/ontology/netIncome"/>
+    </owl:ObjectProperty>
+	
+	<!--- foundingYear  -->
+	<owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/foundingYear">
+        <rdfs:label>founding year</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
+		<owl:equivalentProperty rdf:resource="http://dbpedia.org/ontology/foundingYear"/>
+    </owl:ObjectProperty>
+	
+	<!--- abstract  -->
+	<owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/abstract">
+        <rdfs:label>abstract</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Organisation"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Person"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Location"/>
+		<owl:equivalentProperty rdf:resource="http://dbpedia.org/ontology/abstract"/>
+    </owl:ObjectProperty>
+	
+	<!--- population  -->
+	<owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/population">
+        <rdfs:label>population</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Location"/>
+		<owl:equivalentProperty rdf:resource="http://dbpedia.org/property/population"/>
+		<owl:equivalentProperty rdf:resource="http://dbpedia.org/ontology/populationTotal"/>
+		<owl:equivalentProperty rdf:resource="http://dbpedia.org/property/populationEstimate"/>
+    </owl:ObjectProperty>
+	
+	<!--- geoPoint  -->
+	<owl:ObjectProperty rdf:about="http://webprotege.stanford.edu/geoPoint">
+        <rdfs:label>geo point</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+		<rdfs:domain rdf:resource="http://webprotege.stanford.edu/Location"/>
+		<owl:equivalentProperty rdf:resource="http://www.georss.org/georss/point"/>
     </owl:ObjectProperty>
 	
 	
