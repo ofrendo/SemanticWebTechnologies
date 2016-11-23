@@ -18,10 +18,11 @@ public class RetrieveTriples extends HttpServlet {
 			throws ServletException, IOException  {
 		
 		// reading the user input
-		String inputText = getBody(request);
+		String body = getBody(request);
+		
 		
 		// Produce output
-		String output = Server.processRequest(inputText);
+		String output = Server.processRequest(body);
 		
 		// build response
 		PrintWriter out = response.getWriter();

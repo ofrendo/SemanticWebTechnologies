@@ -36,16 +36,24 @@ public class QueryProperties{
 	//remove by uri
 	public boolean remove(EntityType et, String uri){
 		QueryProperty remove = null;
-		for (QueryProperty qp : map.get(EntityType.LOCATION)) {
+		for (QueryProperty qp : map.get(et)) {
 			if(qp.getUri().equals(uri))
 				remove = qp;				
 		}	
-		return this.remove(EntityType.LOCATION, remove);		
+		return this.remove(et, remove);		
+	}
+	public boolean removeById(EntityType et, String id){
+		QueryProperty remove = null;
+		for (QueryProperty qp : map.get(et)) {
+			if(qp.getId().equals(id))
+				remove = qp;				
+		}	
+		return this.remove(et, remove);		
 	}
 	
 	//remove by object
 	public boolean remove(EntityType et, QueryProperty qp){
-		return map.get(EntityType.LOCATION).remove(qp);		
+		return map.get(et).remove(qp);		
 	}
 	
 

@@ -1,14 +1,17 @@
 var Connector = (function() {
 	var loading = false;
 
-	function retrieveTriples(inputText, callback) {
+	function retrieveTriples(options, inputText, callback) {
 		// https://davidwalsh.name/fetch
 		var url = CONFIG.DOMAIN +  "/RetrieveTriples";
 		var request = new Request(url, {
 			method: "POST", 
 			mode: "cors", 
-			body: inputText,
-			headers: new Headers({
+			body: JSON.stringify({
+				options: options,
+				input: inputText
+			})
+			, headers: new Headers({
 				'Content-Type': 'text/plain'
 			})
 		});
@@ -22,7 +25,15 @@ var Connector = (function() {
 			fetch(request).then(function(response) {
 				loading = false;
 				buttonSearch.innerHTML = "Search for entities";
-				return response.json();
+				if (response.status !== 200) {
+					alert("Error retrieving entities...");
+					console.log("Error retrieving entities:");
+					console.log(response);
+					throw new Error("Error retrieving entities");
+				}
+				else {
+					return response.json();
+				}
 			}).then(function(data) {
 				callback(data);
 			});

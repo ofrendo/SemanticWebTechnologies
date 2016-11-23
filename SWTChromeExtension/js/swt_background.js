@@ -6,10 +6,15 @@
 		init();		
 	});
 
+	var options = {};
+
 	function init() {
 		log("Initializing...");
 		addFixedElements();
 		addPopup();
+		chrome.storage.sync.get("options", function(obj) {
+			options = obj.options;
+		});
 	}
 
 	function addFixedElements() {
@@ -113,7 +118,13 @@
 				}
 				else {
 					var li = document.createElement("li");
-					li.innerHTML = propertyName + ": <a href='" + val + "'>" + val + "</a>";
+					if (isURL(val)) {
+						li.innerHTML = propertyName + ": <a href='" + val + "'>" + val + "</a>";
+					}
+					else {
+						val = encodeHTML(val);
+						li.innerHTML = propertyName + ": " + val;
+					}
 					ul.appendChild(li);
 				}
 			}
@@ -151,7 +162,7 @@
 		selectedText = sanitizeInput(selectedText);
 
 		if (selectedText.length > 0) {
-			Connector.retrieveTriples(selectedText, function(data) {
+			Connector.retrieveTriples(options, selectedText, function(data) {
 				console.log(data);
 				setPopupContents(selectedText, data);
 				onPopupShow();
