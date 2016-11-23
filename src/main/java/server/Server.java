@@ -133,7 +133,8 @@ public class Server {
 
 		String testInput = "{"
 		 				+ "  \"options\": {\"Organization\": [\"309789491\", \"165884424\", \"1524249358\"]}, " // depiction, homepage, founded by
-		 				+ "  \"input\": \"This is a test to identify SAP in Walldorf with H. Plattner as founder.\""
+		 				//+ "  \"input\": \"This is a test to identify SAP in Walldorf with H. Plattner as founder.\""
+		 				+ "  \"input\": \"Michael Gove, Iain Duncan Smith and Theresa Villier are among her backers.\""
 		 				+ "}";
 		//String testInput = "The BBC's Sanjoy Majumder, in Delhi, says rescuers have recently brought out some survivors, including two children, which brought cheers from onlookers.";
 		String output = processRequest(testInput);

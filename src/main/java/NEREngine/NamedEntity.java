@@ -80,6 +80,15 @@ public class NamedEntity {
 			  // Keys in this hashmap are actually the values we want, not the ints
 			  for (String value : property.keySet()) {
 				  value = value.replace("\n", " ");
+				  // Escape special characters
+				  value = value.replace("\\", "\\\\");
+				  value = value.replace("\"", "\\\"");
+				  /*try {
+				      value = java.net.URLEncoder.encode(value, "UTF-8");
+				  } catch (UnsupportedEncodingException e) {
+					  e.printStackTrace();
+				  }*/
+				  
 				  result += "\"" + value + "\",";
 			  }
 			  // remove last comma from properties
