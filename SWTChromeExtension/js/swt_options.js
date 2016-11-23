@@ -43,7 +43,7 @@ var Options = (function($) {
 			var options = obj.options;
 			log("Previously saved options: ");
 			console.log(options);
-			if (!options || Object.keys(options).length === 0) return;
+			if (!options) return;
 
 			var checkboxes = document.querySelectorAll("input[type=checkbox]");
 			for (var i=0;i<checkboxes.length;i++) {

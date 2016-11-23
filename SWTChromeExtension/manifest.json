@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	
 	"name": "SWT Chrome Extension",
-	"description": "<all_urls>",
+	"description": "This extension provides an easy way to search for summoners, champion guides and champion counters.",
 	"version": "0.0.1",
 	
 	"options_page": "options.html",
@@ -13,7 +13,7 @@
 	
 	"content_scripts": [
 		{
-			"matches": ["*://www.bbc.com/*"],
+			"matches": ["<all_urls>"],
 			"css": ["css/style.css"],
 			"js": ["js/jquery-3.1.1.min.js",
 			       "js/d3.min.js", 

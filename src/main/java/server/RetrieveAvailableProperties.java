@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import edu.stanford.nlp.io.EncodingPrintWriter.out;
 import main.java.QueryEngine.JenaEngine;
 import main.java.QueryEngine.QueryProperties;
 

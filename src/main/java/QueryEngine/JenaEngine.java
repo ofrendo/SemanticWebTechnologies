@@ -474,7 +474,7 @@ public class JenaEngine implements QueryEngine {
 	{  
 	  try  
 	  {  
-	    Double.parseDouble(str);  
+	    double d = Double.parseDouble(str);  
 	  }  
 	  catch(NumberFormatException nfe)  
 	  {  

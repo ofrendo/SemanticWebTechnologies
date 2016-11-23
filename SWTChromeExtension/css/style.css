@@ -25,10 +25,10 @@
 	top: 20px;
 	right: 20px;
 	z-index: 999;
-
 	width: 40%;
 	min-width: 500px;
 	height: 900px;
+	left: 20%;
 	background-color: white;
 	padding: 5px;
 	overflow-y: auto;

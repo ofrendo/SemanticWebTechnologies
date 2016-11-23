@@ -1,17 +1,14 @@
 var Connector = (function() {
 	var loading = false;
 
-	function retrieveTriples(options, inputText, callback) {
+	function retrieveTriples(inputText, callback) {
 		// https://davidwalsh.name/fetch
 		var url = CONFIG.DOMAIN +  "/RetrieveTriples";
 		var request = new Request(url, {
 			method: "POST", 
 			mode: "cors", 
-			body: JSON.stringify({
-				options: options,
-				input: inputText
-			})
-			, headers: new Headers({
+			body: inputText,
+			headers: new Headers({
 				'Content-Type': 'text/plain'
 			})
 		});
