@@ -6,10 +6,16 @@
 		init();		
 	});
 
+	var options = {};
+
 	function init() {
 		log("Initializing...");
 		addFixedElements();
 		addPopup();
+
+		chrome.storage.sync.get("options", function(obj) {
+			options = obj.options;
+		});
 	}
 
 	function addFixedElements() {
@@ -169,7 +175,7 @@
 		selectedText = sanitizeInput(selectedText);
 
 		if (selectedText.length > 0) {
-			Connector.retrieveTriples(selectedText, function(data) {
+			Connector.retrieveTriples(options, selectedText, function(data) {
 				console.log(data);
 				setPopupContents(selectedText, data);
 				onPopupShow();
