@@ -8,23 +8,29 @@ var SWT_Visualizer = (function() {
 			links: []
 		};
 
-		var pushedUniques = [];
+		var pushedUniques = {};
 		for (var i=0;i<contextTriples.length;i++) {
 			var triple = contextTriples[i];
-			
+			console.log("triple= " + JSON.stringify(triple));
 			// Only push subject / object if it hasn't been pushed yet
 			if (pushedUniques[triple.subject] === undefined) {
+				console.log("Pushing '" + triple.subject + "' with grp=1");
 				pushedUniques[triple.subject] = 1;
 				result.nodes.push({id: triple.subject, group: 1});
 			}
 			// Change group of node if it's a subject and has been pushed as object
 			else if (pushedUniques[triple.subject] !== 1) {
-				for (var i=0;i<result.nodes.length;i++) {
-					if (result.nodes[i].id === triple.subject)
-						result.nodes[i].group = 1;
+				for (var j=0;j<result.nodes.length;j++) {
+					if (result.nodes[j].id === triple.subject) {
+						console.log("Changing '" + triple.subject + "' to grp=1 for triple=" + JSON.stringify(triple));
+						result.nodes[j].group = 1;
+						pushedUniques[triple.subject] = 1;
+					}
 				}
 			}
+			// Only push an object if it has not been pushed yet
 			if (pushedUniques[triple.object] === undefined) {
+				console.log("Pushing '" + triple.object + "' with grp=3 for triple=" + JSON.stringify(triple));
 				pushedUniques[triple.object] = 3;
 				result.nodes.push({id: triple.object, group: 3});
 			}
@@ -49,10 +55,13 @@ var SWT_Visualizer = (function() {
 		var color = d3.scaleOrdinal(d3.schemeCategory20);
 
 		var simulation = d3.forceSimulation()
-		    .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(150))
-		    .force("charge", d3.forceManyBody().strength([-150]) )  //.distanceMin([1000])
+		    .force("link", d3.forceLink().id(function(d) { return d.id; })) //.distance(150)
+		    .force("charge", d3.forceManyBody().strength([-150]).distanceMin([1000]) )  //
 		    .force("center", d3.forceCenter(width / 2, height / 2))
-		    .force("collide", d3.forceCollide().radius(function(d) { return d.r + 0.5; }).iterations(2));
+		    .force("collide", d3.forceCollide().radius(function(d) { 
+		    	//console.log(d.r); return d.r + 0.5; 
+		    	return 30;
+		    }).iterations(2));
 
 		//d3.json(, function(error, graph) {
 		//  if (error) throw error;

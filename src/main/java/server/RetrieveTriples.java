@@ -3,6 +3,7 @@ package main.java.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
@@ -20,19 +21,22 @@ public class RetrieveTriples extends HttpServlet {
 		// reading the user input
 		String body = getBody(request);
 		
+		// Response stuff
+		response.setContentType("application/json;charset=UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		String origin = request.getHeader("Origin");
+		response.addHeader("Access-Control-Allow-Origin", origin);
 		
 		// Produce output
 		String output = Server.processRequest(body);
 		
 		// build response
-		PrintWriter out = response.getWriter();
-		//out.println("{\"msg\": \"Hello world!\"}");  
-		out.println(output);
+		//PrintWriter out = response.getWriter();
+		//out.println(output);
+		OutputStream out = response.getOutputStream();
+		out.write(output.getBytes("UTF-8"));
+		out.flush();
 		
-		// Response stuff
-		response.setContentType("application/json");
-		String origin = request.getHeader("Origin");
-		response.addHeader("Access-Control-Allow-Origin", origin);
 	}  
 	
 	public static String getBody(HttpServletRequest request) throws IOException {

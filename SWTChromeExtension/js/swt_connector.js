@@ -32,10 +32,11 @@ var Connector = (function() {
 					throw new Error("Error retrieving entities");
 				}
 				else {
-					return response.json();
+					return response.text();
 				}
-			}).then(function(data) {
-				callback(data);
+			}).then(function(body) {
+				//console.log(body);
+				callback(JSON.parse(body));
 			});
 		}
 	}

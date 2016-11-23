@@ -51,7 +51,8 @@
 
 		//var svgVisualization = document.createElement("svg");
 		var svgVisualization = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-		svgVisualization.setAttribute("width", 700);
+		svgVisualization.setAttribute("width", divContainer.offsetWidth-5);
+		//svgVisualization.setAttribute("width", 700);
 		svgVisualization.setAttribute("height", 800);
 		svgVisualization.id = "swtSVGVisualization";
 		divContainer.appendChild(svgVisualization);
@@ -69,13 +70,13 @@
 		var divContainer = document.getElementById("swtDivPopup");
 		divContainer.classList.remove("swtHidden");
 		var divOverlay = document.getElementById("swtDivOverlay");
-		divOverlay.classList.remove("swtHidden");
+		//divOverlay.classList.remove("swtHidden");
 	}
 	function onPopupClose() {
 		var divContainer = document.getElementById("swtDivPopup");
 		divContainer.classList.add("swtHidden");
 		var divOverlay = document.getElementById("swtDivOverlay");
-		divOverlay.classList.add("swtHidden");
+		//divOverlay.classList.add("swtHidden");
 	}
 
 	function setPopupContents(selectedText, data) {
@@ -103,12 +104,14 @@
 		var depictionSrc;
 		var ul = document.createElement("ul");
 		for (var i=0; i<entity.properties.length;i++) {
-			for (var j=0;j<entity.properties[i].value.length;j++) {
 
-				var propertyName = entity.properties[i].name; 
-				if (CONFIG.PROPERTY_LABEL_MAPPING[propertyName]) {
-					propertyName = CONFIG.PROPERTY_LABEL_MAPPING[propertyName];
-				}
+			var propertyName = entity.properties[i].name; 
+			if (CONFIG.PROPERTY_LABEL_MAPPING[propertyName]) {
+				propertyName = CONFIG.PROPERTY_LABEL_MAPPING[propertyName];
+			}
+			var addedValues = [];
+
+			for (var j=0;j<entity.properties[i].value.length;j++) {
 
 				var val = entity.properties[i].value[j];
 
@@ -117,12 +120,20 @@
 					depictionSrc = val;
 				}
 				else {
+					// Only add a li if not already in
+					if (addedValues.indexOf(val) !== -1) {
+						continue;
+					}
+					else {
+						addedValues.push(val);
+					}
+
 					var li = document.createElement("li");
 					if (isURL(val)) {
 						li.innerHTML = propertyName + ": <a href='" + val + "'>" + val + "</a>";
 					}
 					else {
-						val = encodeHTML(val);
+						//val = encodeHTML(val);
 						li.innerHTML = propertyName + ": " + val;
 					}
 					ul.appendChild(li);
@@ -150,6 +161,7 @@
 
 		return divContainer;
  	}
+
 
  	function createVisualization(contextTriples) {
  		SWT_Visualizer.createVisualization(contextTriples);
