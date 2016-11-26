@@ -47,6 +47,7 @@
 		<owl:equivalentProperty rdf:resource="http://xmlns.com/foaf/0.1/homepage"/>
 		<owl:equivalentProperty rdf:resource="http://dbpedia.org/property/homepage"/>
 		<owl:equivalentProperty rdf:resource="http://dbpedia.org/property/website"/>
+		<owl:equivalentProperty rdf:resource="http://xmlns.com/foaf/0.1/page"/>
     </owl:ObjectProperty>
 	
 	<!-- seeAlso -->

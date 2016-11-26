@@ -27,6 +27,7 @@ public class QuerySource extends Thread{
 	    ,Education_UK
 	    ,DataGovUk
 	    ,IServe
+	    ,WorldBank
 	}
 
 	private static HashMap<String, List<String>> uriCache; 
@@ -111,6 +112,9 @@ public class QuerySource extends Thread{
 		case IServe:
 			this.endpoint = "http://iserve.kmi.open.ac.uk/iserve/sparql";
 			break;
+		case WorldBank:
+			this.endpoint = "http://worldbank.270a.info/sparql";
+			break;
 		}
 		
 	}
@@ -166,6 +170,18 @@ public class QuerySource extends Thread{
 				break;
 			case LOCATION:
 				uri = ""; //have no location
+				break;
+			}
+		case WorldBank:
+			switch (et) {
+			case ORGANIZATION:
+				uri = ""; //no organisations
+				break;
+			case PERSON:
+				uri = ""; //no persons
+				break;
+			case LOCATION:
+				uri = "<http://dbpedia.org/ontology/Country>";
 				break;
 		}
 		break;

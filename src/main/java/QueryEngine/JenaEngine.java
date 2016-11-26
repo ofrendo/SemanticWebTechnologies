@@ -102,6 +102,7 @@ public class JenaEngine implements QueryEngine {
 //			sources.add(QuerySource.Source.Education_UK); //Slow
 //			sources.add(QuerySource.Source.DataGovUk); //only internal references... nothing we can use
 			sources.add(QuerySource.Source.IServe);
+//			sources.add(QuerySource.Source.WorldBank); //No rdfs:label! Instead http://www.w3.org/2004/02/skos/core#prefLabel
 		}
 		
 		//add copies of entities to ensure that list cannot be change from outside
@@ -620,9 +621,9 @@ public class JenaEngine implements QueryEngine {
 //		text = "Michael Sherwood quits Goldman Sachs role";
 //		runtest(text);
 		
-		//1st simple test with all entity types
-		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
-		runtest(text);
+//		//1st simple test with all entity types
+//		text = "This is a test to identify SAP in Walldorf with H. Plattner as founder.";
+//		runtest(text);
 		
 //		text = "Michael Sherwood quits Goldman Sachs role";
 //		runtest(text);
@@ -645,8 +646,8 @@ public class JenaEngine implements QueryEngine {
 //		text = "Russia is a country as well.";
 //		runtest(text);
 		
-//		text = "Russia is a country having a lot relations to Germany or even Syria.";
-//		runtest(text);
+		text = "Russia is a country having a lot relations to Germany or even Syria.";
+		runtest(text);
 		
 //		//2nd TEST (just hit the cache)
 //		text = "Just testing how caching works for H. Plattner from Walldorf.";
