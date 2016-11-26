@@ -301,6 +301,9 @@ public class QuerySource extends Thread{
 //		   }
 //		}
 		
+		//Add owl:sameAs manually to ensure that it is retrieved (not used in output) 
+		properties.add("http://www.w3.org/2002/07/owl#sameAs");
+		
 		String queryString = "";
 		List<String> parts = new ArrayList<String>();
 		
