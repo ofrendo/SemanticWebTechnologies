@@ -6,3 +6,4 @@ nginx-1.10.2/logs/nginx.pid
 *.blg
 *.bbl
 ProjectReport/SWTProjectReport.synctex.gz
+*.toc

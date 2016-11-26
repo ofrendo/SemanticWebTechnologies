@@ -83,13 +83,13 @@
     Data and Web Science Group\\
     Prof.\ Dr.\ Paulheim\\
     University of Mannheim\\} \vspace{2cm}
-   {October 2016}
+   {December 2016}
   \end{center}
 \end{titlepage} 
 
 % no lets make some add some table of contents
-%\tableofcontents
-%\newpage
+\tableofcontents
+\newpage
 
 %\listofalgorithms
 
@@ -107,38 +107,44 @@
 % okay, start new numbering ... here is where it really starts
 \pagenumbering{arabic}
 
-\section{Requirements of report}
 • 10-12 pages (sharp!) without title and toc pages 
 • due Friday, December 2nd, 23:59 
 • send by email to Anna Lisa, André and Heiko 
-• describe your solution including the steps to get there: 
-1. Application domain and goals 
-Which users are targeted? – Which user problems are solved? – Which user information needs are addressed
-2. Datasets used 
- Which datasets does the application use? – How are they accessed (SPARQL, local)? – How do you combine information from different datasets? 
-3. Techniques used 
-Reasoning – Search – external services
-4. Example results 
- What outcomes does the application provide? – How is are some user queries answered? 
-5. Known limitations 
-– In which domains does the application not work? – Are there queries which cannot be answered? – Why? – How could you overcome those limitations, given more time?
-6. Lessons learned 
-– Which challenges did you face? – What were the biggest obstacles? – What would you do differently next time?
+• describe your solution including the steps to get there (chapters already created)
 
 Requirements 
 You must use the DWS master thesis layout
 Please cite sources properly. Preferred citation style [Author, year]
 
+
+
+\section{Application domain and goals}
+Which users are targeted? – Which user problems are solved? – Which user information needs are addressed
+
+\section{Datasets used} 
+Which datasets does the application use? – How are they accessed (SPARQL, local)? – How do you combine information from different datasets? 
+
+\section{Techniques used} 
+Reasoning – Search – external services
+
+\section{Example results}
+What outcomes does the application provide? – How is are some user queries answered? 
+
+
+\section{Known limitations}
+– In which domains does the application not work? – Are there queries which cannot be answered? – Why? – How could you overcome those limitations, given more time?
+
+We could mention papers describing techniques which could improve certain areas like LINDA \cite{boehm_linda:_2012} for entity matching. 
+
+\section{Lessons learned}
+– Which challenges did you face? – What were the biggest obstacles? – What would you do differently next time?
+
 %References
 %Add own references in .bib file
-
-
-\section{Kown limitations}
-We could mention papers describing techniques which could improve certain areas like LINDA\cite{boehm_linda:_2012} for entity matching. 
-
 \pagebreak
 \bibliographystyle{apalike}
-\bibliography{SWTReport}  
+\bibliography{SWTReport_Sascha}  
+%\bibliography{SWTReport_Sascha,SWTReport_Olli}
 
 
 \end{document}
