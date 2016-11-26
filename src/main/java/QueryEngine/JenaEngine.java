@@ -62,27 +62,10 @@ public class JenaEngine implements QueryEngine {
 	 */
 	@Override
 	public QueryProperties getAvailableProperties() {
-		//If properties manipulated later -> by reference is bad -> deep copy needed
-//		HashMap<EntityType,List<QueryProperty>> ext_list = new HashMap<EntityType,List<QueryProperty>>();
-//		for (EntityType et : EntityType.values()) {
-//			List<QueryProperty> list = new ArrayList<QueryProperty>();
-//			list.addAll(getAvailableProperties(et));
-//			ext_list.put(et,list);
-//		}
-		
+		//If properties manipulated later -> by reference is bad -> deep copy needed	
 		return new QueryProperties(availableProperties);
 	}
 
-//	/* (non-Javadoc)
-//	 * @see QueryEngine.QueryEngine#getAvailableProperties(NEREngine.NamedEntity.EntityType)
-//	 */
-//	@Override
-//	public List<QueryProperty> getAvailableProperties(EntityType type) {
-//		//same issue as above -> deep copy to avoid return by reference
-//		List<QueryProperty> ext_list = new ArrayList<QueryProperty>();
-//		ext_list.addAll(availableProperties.get(type));
-//		return ext_list;
-//	}
 
 	/* (non-Javadoc)
 	 * @see QueryEngine.QueryEngine#queryEntityProperties(java.util.List)
