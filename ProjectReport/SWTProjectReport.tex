@@ -1,0 +1,144 @@
+% do not change these two lines (this is a hard requirement
+% there is one exception: you might replace oneside by twoside in case you deliver 
+% the printed version in the accordant format
+\documentclass[11pt,titlepage,oneside,openany]{article}
+\usepackage{times}
+
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{graphicx}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{ntheorem}
+
+% \usepackage{paralist}
+\usepackage{tabularx}
+
+% this packaes are useful for nice algorithms
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+% well, when your work is concerned with definitions, proposition and so on, we suggest this
+% feel free to add Corrolary, Theorem or whatever you need
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+
+
+% its always useful to have some shortcuts (some are specific for algorithms
+% if you do not like your formating you can change it here (instead of scanning through the whole text)
+\renewcommand{\algorithmiccomment}[1]{\ensuremath{\rhd} \textit{#1}}
+\def\MYCALL#1#2{{\small\textsc{#1}}(\textup{#2})}
+\def\MYSET#1{\scshape{#1}}
+\def\MYAND{\textbf{ and }}
+\def\MYOR{\textbf{ or }}
+\def\MYNOT{\textbf{ not }}
+\def\MYTHROW{\textbf{ throw }}
+\def\MYBREAK{\textbf{break }}
+\def\MYEXCEPT#1{\scshape{#1}}
+\def\MYTO{\textbf{ to }}
+\def\MYNIL{\textsc{Nil}}
+\def\MYUNKNOWN{ unknown }
+% simple stuff (not all of this is used in this examples thesis
+\def\INT{{\mathcal I}} % interpretation
+\def\ONT{{\mathcal O}} % ontology
+\def\SEM{{\mathcal S}} % alignment semantic
+\def\ALI{{\mathcal A}} % alignment
+\def\USE{{\mathcal U}} % set of unsatisfiable entities
+\def\CON{{\mathcal C}} % conflict set
+\def\DIA{\Delta} % diagnosis
+% mups and mips
+\def\MUP{{\mathcal M}} % ontology
+\def\MIP{{\mathcal M}} % ontology
+% distributed and local entities
+\newcommand{\cc}[2]{\mathit{#1}\hspace{-1pt} \# \hspace{-1pt} \mathit{#2}}
+\newcommand{\cx}[1]{\mathit{#1}}
+% complex stuff
+\def\MER#1#2#3#4{#1 \cup_{#3}^{#2} #4} % merged ontology
+\def\MUPALL#1#2#3#4#5{\textit{MUPS}_{#1}\left(#2, #3, #4, #5\right)} % the set of all mups for some concept
+\def\MIPALL#1#2{\textit{MIPS}_{#1}\left(#2\right)} % the set of all mips
+
+
+
+
+
+\begin{document}
+
+\pagenumbering{roman}
+% lets go for the title page, something like this should be okay
+\begin{titlepage}
+	\vspace*{2cm}
+  \begin{center}
+   {\Large IE650 Semantic Web Technologies\\}
+   \vspace{2cm} 
+   {Project Report\\}
+   \vspace{2cm}
+   {presented by\\
+    Oliver Frendo (1510432) \\
+    Sascha Ulbrich (1493181) \\
+   }
+   \vspace{1cm} 
+   {submitted to the\\
+    Data and Web Science Group\\
+    Prof.\ Dr.\ Paulheim\\
+    University of Mannheim\\} \vspace{2cm}
+   {October 2016}
+  \end{center}
+\end{titlepage} 
+
+% no lets make some add some table of contents
+%\tableofcontents
+%\newpage
+
+%\listofalgorithms
+
+%\listoffigures
+
+%\listoftables
+
+% evntuelly you might add something like this
+% \listtheorems{definition}
+% \listtheorems{proposition}
+
+\newpage
+
+
+% okay, start new numbering ... here is where it really starts
+\pagenumbering{arabic}
+
+\section{Requirements of report}
+• 10-12 pages (sharp!) without title and toc pages 
+• due Friday, December 2nd, 23:59 
+• send by email to Anna Lisa, André and Heiko 
+• describe your solution including the steps to get there: 
+1. Application domain and goals 
+Which users are targeted? – Which user problems are solved? – Which user information needs are addressed
+2. Datasets used 
+ Which datasets does the application use? – How are they accessed (SPARQL, local)? – How do you combine information from different datasets? 
+3. Techniques used 
+Reasoning – Search – external services
+4. Example results 
+ What outcomes does the application provide? – How is are some user queries answered? 
+5. Known limitations 
+– In which domains does the application not work? – Are there queries which cannot be answered? – Why? – How could you overcome those limitations, given more time?
+6. Lessons learned 
+– Which challenges did you face? – What were the biggest obstacles? – What would you do differently next time?
+
+Requirements 
+You must use the DWS master thesis layout
+Please cite sources properly. Preferred citation style [Author, year]
+
+%References
+%Add own references in .bib file
+
+
+\section{Kown limitations}
+We could mention papers describing techniques which could improve certain areas like LINDA\cite{boehm_linda:_2012} for entity matching. 
+
+\pagebreak
+\bibliographystyle{apalike}
+\bibliography{SWTReport}  
+
+
+\end{document}

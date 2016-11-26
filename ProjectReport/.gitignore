@@ -1,0 +1,11 @@
+/tmp/
+/SWTProjectOutline.pdf
+/SWTProjectOutline.synctex.gz
+.project
+.texlipse
+*.loa
+*.thm
+*.pdf
+*.aux
+*.log
+*.out
