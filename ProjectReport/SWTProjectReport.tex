@@ -134,7 +134,7 @@ In the most recent version multiple sources are configured additionally to DBPed
 \begin{table}[ht]
 	\begin{tabular*}{\textwidth}{p{2,2cm}|p{3,8cm}|p{2,1cm} |p{3cm}}
 		
-		\textbf{Source} &\small \textbf{SPARQL Endpoint} & \textbf{Entities} & \textbf{Usage}  \\
+		\textbf{Data Set} &\small \textbf{SPARQL Endpoint} & \textbf{Entities} & \textbf{Usage}  \\
 		\hline 
 		\textbf{DBPediaLive} &\small \url{http://dbpedia-live.openlinksw.com/sparql/} & Organisation, Person, Location  & Active per default\\
 		\hline 
@@ -151,6 +151,8 @@ In the most recent version multiple sources are configured additionally to DBPed
 		\textbf{DataGov (UK)} &\small \url{http://services.data.gov.uk/reference/sparql} &  Organisation, Person  & Not useful, only internal links\\
 		\hline 
 		\textbf{World Bank} &\small \url{http://worldbank.270a.info/sparql} &  Location & Error: No rdfs:label, uses skos:prefLabel \\
+		\hline 
+		\textbf{YAGO2} &\small \url{https://linkeddata1.calcul.u-psud.fr/sparql} &  Organisation, Person, Location & Active per default, but slowest \\
 	\end{tabular*}
 	\caption{Additional data sources and their usage}
 	\label{tab:sources}
@@ -161,15 +163,22 @@ Most of the source were identified via \url{http://sparqles.ai.wu.ac.at}. This w
 
 
 \section{Techniques used} 
+Reasoning
+Search
+external services
 
 
 \subsection{Overview}
 %Olli
 Architecture 
 
-Reasoning
-Search
-external services
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.6\textwidth]{architecture}
+	\caption{High-Level Architecture}
+	\label{fig:architecture}
+\end{figure}
+
 
 
 \subsection{Named Entity Recognition}
@@ -177,21 +186,29 @@ external services
 %TODO: Describe NER via Stanford Core NLP
 
 \subsection{SPARQL Queries}
-After identifying the named entity and its entity type these information are handed over to the query engine which is implemented using Jena\footnote{\url{https://jena.apache.org/}}. The query process is divided into two steps, first all selected sources are queried in parallel in own threads and afterwards after all are finished the results are merged into one model where the result properties and the context triples are derived from. These two steps are explained in more detail in the following.
+After identifying the named entity and its entity type these information are handed over to the query engine which is implemented using Jena\footnote{\url{https://jena.apache.org/}}. The query process is divided into two steps, first all selected sources are queried in parallel in own threads and afterwards after all are finished the results are merged into one model where the result properties and the context triples are derived from. These two steps are illustrated in Figure \ref{fig:details_query} and explained in more detail in the following.
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=1\textwidth]{QueryEngineDetails}
+	\caption{Details of Query Engine}
+	\label{fig:details_query}
+\end{figure}
+
 \paragraph{Querying Sources}
-All sources are queried the same way via class QuerySource, since the only differences are the endpoint URLs and entity type URIs as described before. In order to derive properties and context of a source based on the names and types of the entities, multiple queries are executed in two steps.
+All sources are queried the same way via class QuerySource as illustrated in Figure \ref{fig:details_query} on the right hand side. Source queries could be generalized since the only differences are the endpoint URLs and entity type URIs as described before. In order to derive properties and context of a source based on the names and types of the entities, multiple queries are executed in two steps.
 
-First step is the identification of URI candidates by performing a reg-ex based search per identified entity in the context. These queries run in parallel so the system can handle multiple entities without significant increase in runtime. The results of these first queries are URIs which meet the type definition and the reg-ex. The reg-ex allows up to 10 characters before and after the identfied name and an period is replaces with ".*" to allow a match with shortened names. In cases there are too many matches (currently the threshold is five), an extended logic is used to reduce the amount of URI candidates. 
-The approach is based on score which is calculated for each URI by multiplying a \textit{relation score} and the normalized edit distance of the URI label and the entity name. Therefor the source queries provide a count of relations available per URI. This information is used to calculate the \textit{realtion score}, which is a relative score, being 1 for the URI with the most relations. The 5 URIs with the highest score are selected. Less URIs are selected if there are not enough URIs having at least a score value which equals at least 75\% of the highest score value.
+First step is the identification of URI candidates by performing a reg-ex based search per identified entity in the context. These queries run in parallel so the system can handle multiple entities without significant increase in runtime. Technically multiple \textit{SELECT-Queries} are executed, as shown in Figure \ref{fig:details_query}. The results of these first queries are URIs which meet the type definition and the reg-ex. The reg-ex allows up to 10 characters before and after the identified name and a period is replaces with ".*" to allow a match with shortened names. In cases there are too many matches (currently the threshold is five), an extended logic is used to reduce the amount of URI candidates. 
 
-In a second step the identified URI candidates are used to query the source specific context. So all properties are queried as well as direct and in-direct relations between the entities. Furthermore the labels of all elements are derived as well as OWL sameAs relations. 
-This last query is a \textit{Construct-Query} and therefore returns a model which is the result of the source queries. 
+The approach for URI selection is based on a score which is calculated for each URI by multiplying a \textit{relation score} and the normalized edit distance of the URI label and the entity name. Therefore the source queries provide a count of relations available per URI. This information is used to calculate the \textit{relation score}, which is a relative score, being 1 for the URI with the most relations. The top five URIs with the highest score are selected. Less URIs are selected if there are not enough URIs having at least a score value of at least 75\% of the highest score value.
+
+In a second step the identified URI candidates are used to query the source specific context. So all properties are queried as well as direct and in-direct relations between the entities. Furthermore the labels of all elements are derived as well as OWL \textit{sameAs} relations. 
+This last query is a \textit{Construct-Query} and therefore returns a model which is the result of the source queries, as shown in Figure \ref{fig:details_query}. 
 
 \paragraph{Querying Local Model}
-After all sources queries are finished the derived models are added to the same local model. This model is combined with a ontology we defined for this project. This own ontology mainly consists of OWL euivelantProperty definitions for own properties which group the corresponding sources specific properties. Furthermore there is a mapping of own classes representing the entity types to the corresponding source specific class definitions of the entities. Therefore the OWL equivelantClass Property is used. For inference the \textit{OWLMicroReasoner} is used. More complex OWL reasoner need much more time, so they are not used for performance reasons. 
+After all source queries are finished the derived models are added to the same local model, as illustrated in Figure \ref{fig:details_query} on the left hand side. This model is combined with an own ontology defined for this project. This own ontology mainly consists of OWL \textit{euivelantProperty} definitions for own properties which group the corresponding sources specific properties. Furthermore there is a mapping of own classes representing the entity types to the corresponding source specific class definitions of the entities. Therefore the OWL \textit{equivelantClass} property is used. For inference the \textit{OWLMicroReasoner} is used. More complex OWL reasoner need much more time, so they are not used for performance reasons. 
 
-Before the properties are derived from this infered model, one URI per entity is derived across sources. The one with most relations is chosen. 
-For these URIs the properties are then queried based on our own ontology and returned as result. If there are multiple result values for a property all values are returned. If the same value occurs multiple times for the same property, a count is increased. For numeric values additional logic is applied to ensure proper formatting and unit references. 
+Before the properties are derived from this inferred model, one URI per entity is derived across sources. The one with most relations is chosen. 
+For these URIs the properties are then queried based on the own ontology and returned as result. If there are multiple result values for a property all values are returned. If the same value occurs multiple times for the same property, a count is increased. For numeric values additional logic is applied to ensure proper formatting and unit references. All property values including a language tag which is not empty nor English are discarded.
 
 
 \subsection{Server and Chrome Extension}
