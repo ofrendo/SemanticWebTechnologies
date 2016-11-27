@@ -103,6 +103,7 @@ public class JenaEngine implements QueryEngine {
 //			sources.add(QuerySource.Source.DataGovUk); //only internal references... nothing we can use
 			sources.add(QuerySource.Source.IServe);
 //			sources.add(QuerySource.Source.WorldBank); //No rdfs:label! Instead http://www.w3.org/2004/02/skos/core#prefLabel
+			sources.add(QuerySource.Source.YAGO2);
 		}
 		
 		//add copies of entities to ensure that list cannot be change from outside

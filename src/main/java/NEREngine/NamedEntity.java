@@ -48,7 +48,21 @@ public class NamedEntity {
 	  
 	  @Override
 	  public String toString(){
-		return type + " '" + name + "' URI: " + uri + "\n Properties: " + properties;
+		String str = type + " '" + name + "' URI: " + uri;
+		if(!properties.isEmpty()){
+			for (String prop : properties.keySet()) {
+				str += "\n Property " + prop + ": ";
+				for (String value : properties.get(prop).keySet()) {
+					if(value.length() > 50){
+						str += value.substring(0, 50) + "..."; 
+					}else{
+						str += value; 
+					}
+					str += "(" + properties.get(prop).get(value) + "); ";
+				}
+			}
+		}
+		return str;
 		  
 	  }
 	  
@@ -147,7 +161,6 @@ public class NamedEntity {
 		  }
 	  
 	  public HashMap<String,HashMap<String, Integer>> getProperties(){		  
-		  //TODO copy necessary?
 		  return properties;
 	  }
 	  

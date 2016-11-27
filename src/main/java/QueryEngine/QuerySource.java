@@ -28,6 +28,7 @@ public class QuerySource extends Thread{
 	    ,DataGovUk
 	    ,IServe
 	    ,WorldBank
+	    ,YAGO2
 	}
 
 	private static HashMap<String, List<String>> uriCache; 
@@ -115,6 +116,9 @@ public class QuerySource extends Thread{
 		case WorldBank:
 			this.endpoint = "http://worldbank.270a.info/sparql";
 			break;
+		case YAGO2:
+			this.endpoint = "https://linkeddata1.calcul.u-psud.fr/sparql";
+			break;
 		}
 		
 	}
@@ -182,6 +186,18 @@ public class QuerySource extends Thread{
 				break;
 			case LOCATION:
 				uri = "<http://dbpedia.org/ontology/Country>";
+				break;
+		}
+		case YAGO2:
+			switch (et) {
+			case ORGANIZATION:
+				uri = "<http://yago-knowledge.org/resource/wordnet_organization_108008335>";
+				break;
+			case PERSON:
+				uri = "<http://yago-knowledge.org/resource/wordnet_person_100007846>";
+				break;
+			case LOCATION:
+				uri = "<http://yago-knowledge.org/resource/wordnet_location_100027167>";
 				break;
 		}
 		break;
@@ -467,6 +483,9 @@ public class QuerySource extends Thread{
 	public static void main(String[] args) {
 		System.out.println(String.valueOf(Math.abs("ztewfavbdhjsfd ndsfvg<hjkdölmf".hashCode())));
 		System.out.println(String.format("%,.2f",Double.parseDouble("185000000.00")));
+		String str = "012345789";
+		System.out.println(str.substring(0,5));
+		System.out.println(str.substring(0, 20));
 		
 	}
 }

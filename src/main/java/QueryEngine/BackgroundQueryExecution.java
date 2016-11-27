@@ -160,16 +160,16 @@ public class BackgroundQueryExecution extends Thread {
 	}
 	
 	public static void main(String[] args) {
-		String endpoint = "http://worldbank.270a.info/sparql";
+		String endpoint = "https://linkeddata1.calcul.u-psud.fr/sparql";
 		String query = ""; 
-//		query = "SELECT DISTINCT ?t WHERE {"
-//				+ "?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?t"
-//				+ "}";
+		query = "SELECT DISTINCT ?t WHERE {"
+				+ "?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?t"
+				+ "}";
 		
-		query = "SELECT DISTINCT ?s ?p ?o WHERE {"		
-				+ "?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country>."
-				+ "?s ?p ?o."
-				+ "} LIMIT 200";
+//		query = "SELECT DISTINCT ?s ?p ?o WHERE {"		
+//				+ "?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Country>."
+//				+ "?s ?p ?o."
+//				+ "} LIMIT 200";
 		
 
 		QueryExecution qe = QueryExecutionFactory.sparqlService(endpoint, query);
