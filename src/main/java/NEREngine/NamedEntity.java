@@ -2,11 +2,13 @@ package main.java.NEREngine;
 
 import java.util.HashMap;
 
+import main.java.QueryEngine.QueryProperty;
+
 public class NamedEntity {
 
 	  private String name;
 	  private EntityType type;
-	  private HashMap<String,HashMap<String, Integer>> properties;
+	  private HashMap<QueryProperty, HashMap<String, Integer>> properties;
 	  private String uri;
 
 	  public String getName() {
@@ -21,7 +23,7 @@ public class NamedEntity {
 	    super();
 	    this.name = name;
 	    this.type = type;
-	    this.properties = new HashMap<String,HashMap<String, Integer>>();
+	    this.properties = new HashMap<QueryProperty,HashMap<String, Integer>>();
 	    this.uri = "";
 	  }
 	  
@@ -29,7 +31,7 @@ public class NamedEntity {
 		  super();
 		  this.name = template.getName();
 		  this.type = template.getType();
-		  this.properties = new HashMap<String,HashMap<String, Integer>>();
+		  this.properties = new HashMap<QueryProperty,HashMap<String, Integer>>();
 		  this.addProperties(template.getProperties());
 		  this.uri = template.getURI();
 	  }  
@@ -50,8 +52,8 @@ public class NamedEntity {
 	  public String toString(){
 		String str = type + " '" + name + "' URI: " + uri;
 		if(!properties.isEmpty()){
-			for (String prop : properties.keySet()) {
-				str += "\n Property " + prop + ": ";
+			for (QueryProperty prop : properties.keySet()) {
+				str += "\n Property " + prop.getLabel() + ": ";
 				for (String value : properties.get(prop).keySet()) {
 					if(value.length() > 50){
 						str += value.substring(0, 50) + "..."; 
@@ -88,9 +90,9 @@ public class NamedEntity {
 				 "  \"URI\": \"" + uri + "\",\n" + 
 				 "  \"properties\": [";
 		  
-		  for (String key : properties.keySet()) {
+		  for (QueryProperty key : properties.keySet()) {
 			  HashMap<String, Integer> property = properties.get(key);
-			  result += "\n    {\"name\": \"" + key + "\", \"value\": [";
+			  result += "\n    {\"name\": \"" + key.getLabel() + "\", \"value\": ["; //@Olli: change key to key.getLabel()
 			  // Keys in this hashmap are actually the values we want, not the ints
 			  for (String value : property.keySet()) {
 				  value = value.replace("\n", " ");
@@ -126,15 +128,15 @@ public class NamedEntity {
 	  }
 	  
 	  //add property values via copy
-	  public void addProperties(HashMap<String,HashMap<String, Integer>> p){
-		  for (String p_key : p.keySet()) {
+	  public void addProperties(HashMap<QueryProperty,HashMap<String, Integer>> p){
+		  for (QueryProperty p_key : p.keySet()) {
 			  for (String v_key : p.get(p_key).keySet()) {
 				  addPropertyValue(p_key, v_key, p.get(p_key).get(v_key).intValue());
 			  }			
 		  }
 	  }
 	  
-	  public void addPropertyValue(String p_key, String v_key, Integer count){
+	  public void addPropertyValue(QueryProperty p_key, String v_key, Integer count){
 		  if(!properties.containsKey(p_key)){
 			  //Add new property with initial value list
 			  properties.put(p_key, new HashMap<String, Integer>());
@@ -160,7 +162,7 @@ public class NamedEntity {
 			 return this.type + "_" + this.name;
 		  }
 	  
-	  public HashMap<String,HashMap<String, Integer>> getProperties(){		  
+	  public HashMap<QueryProperty,HashMap<String, Integer>> getProperties(){		  
 		  return properties;
 	  }
 	  

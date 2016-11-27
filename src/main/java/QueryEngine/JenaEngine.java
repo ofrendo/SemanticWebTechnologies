@@ -427,13 +427,10 @@ public class JenaEngine implements QueryEngine {
 	// ------- Parse Tuple of local query result: based on Entity  
 	private void handleQueryTuple(QuerySolution tuple, List<QueryProperty> propDic, NamedEntity ne) {
 		String v = "";
-		String k = "";
 		
 		//handle dynamic properties
 		for (QueryProperty prop: propDic) {
 			v = new String();
-			k = new String(); 
-			k = prop.getUri();
 			if(tuple.contains(prop.getId())){
 				RDFNode node = tuple.get(prop.getId());
 				if(node.isLiteral()){
@@ -449,7 +446,7 @@ public class JenaEngine implements QueryEngine {
 				}else{
 					v = node.toString();
 				}
-				ne.addPropertyValue(k, v, 1);				
+				ne.addPropertyValue(prop, v, 1);				
 			}
 		}
 		
