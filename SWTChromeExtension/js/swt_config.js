@@ -11,9 +11,12 @@ var CONFIG = {
 	    "http://webprotege.stanford.edu/population": "Population",
 	    "http://webprotege.stanford.edu/education": "Education",
 	    "http://webprotege.stanford.edu/seeAlso": "See also"
-	},
+	}, 
+	MIN_SIM: 0.9, // min similarity
+	SIM_FUNCTION: jaccard.sim,
 	USE_SELECTED_TEXT: null //"Michael Gove, Iain Duncan Smith and Theresa Villier are among her backers."
 };
+
 
 
 
@@ -24,11 +27,15 @@ function log(input) {
 
 
 function isURL(str) {
-  var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-  '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name
-  '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-  '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-  '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-  '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
-  return pattern.test(str);
+	var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+	'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name
+	'((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+	'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+	'(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+	'(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+	return pattern.test(str);
+}
+
+function formatDouble(n) {
+	return parseFloat(Math.round(n * 100) / 100).toFixed(2);
 }

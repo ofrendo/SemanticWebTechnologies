@@ -17,6 +17,7 @@
 			"css": ["css/style.css"],
 			"js": ["js/jquery-3.1.1.min.js",
 			       "js/d3.min.js", 
+			       "js/stringSim.js",
 				   "js/swt_config.js",
 				   "js/swt_connector.js",
 				   "js/swt_background.js",

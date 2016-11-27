@@ -110,7 +110,6 @@
 			if (CONFIG.PROPERTY_LABEL_MAPPING[propertyName]) {
 				propertyName = CONFIG.PROPERTY_LABEL_MAPPING[propertyName];
 			}
-			var addedValues = [];
 
 			for (var j=0;j<entity.properties[i].value.length;j++) {
 
@@ -121,22 +120,20 @@
 					depictionSrc = val;
 				}
 				else {
-					// Only add a li if not already in
-					if (addedValues.indexOf(val) !== -1) {
-						continue;
-					}
-					else {
-						addedValues.push(val);
+
+					// Compare to previous strings already added
+					var highestSim = -1;
+					for (var k=0;k<j;k++) {
+						var alreadyAddedVal = entity.properties[i].value[k];
+						var sim = CONFIG.SIM_FUNCTION(alreadyAddedVal, val);
+						if (highestSim < sim)
+							highestSim = sim;
 					}
 
-					var li = document.createElement("li");
-					if (isURL(val)) {
-						li.innerHTML = propertyName + ": <a href='" + val + "'>" + val + "</a>";
-					}
-					else {
-						//val = encodeHTML(val);
-						li.innerHTML = propertyName + ": " + val;
-					}
+
+					var li = (highestSim < CONFIG.MIN_SIM) ? 
+								buildOriginalAttributeLi(propertyName, val) : 
+								buildSimilarAttributeLi(propertyName, val, highestSim);
 					ul.appendChild(li);
 				}
 			}
@@ -163,6 +160,42 @@
 		return divContainer;
  	}
 
+ 	function buildOriginalAttributeLi(propertyName, val) {
+ 		var li = document.createElement("li");
+		li.innerHTML = buildLiHTML(propertyName, val);
+		return li;
+ 	}
+ 	function buildSimilarAttributeLi(propertyName, val, highestSim) {
+ 		var li = document.createElement("li");
+ 		li.innerHTML = propertyName + ": Similar value found (sim=" + formatDouble(highestSim) + "). Click to show";
+
+ 		li.classList.add("liSimilarValue");
+ 		li.dataset.show_value = "hide";
+ 		var showing = false;
+
+ 		li.addEventListener("click", function(e) {
+ 			li = e.target;
+ 			if (showing === true) {
+ 				showing = false;
+ 				li.dataset.show_value = "hide";
+ 				li.innerHTML = propertyName + ": Similar value found (sim=" + formatDouble(highestSim) + "). Click to show";
+ 			}
+ 			else {
+ 				showing = true;
+ 				li.dataset.show_value = "show";
+ 				li.innerHTML = buildLiHTML(propertyName, val);
+ 			}
+ 		});
+ 		return li;
+ 	}
+ 	function buildLiHTML(propertyName, val) {
+ 		if (isURL(val)) {
+			return propertyName + ": <a href='" + val + "'>" + val + "</a>";
+		}
+		else {
+			return propertyName + ": " + val;
+		}
+ 	}
 
  	function createVisualization(contextTriples) {
  		SWT_Visualizer.createVisualization(contextTriples);

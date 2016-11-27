@@ -62,6 +62,32 @@
 	list-style: disc !important;
 }
 
+
+.liSimilarValue[data-show_value='show']:before {
+	/* Arrow down */
+	width: 0; 
+	height: 0; 
+	border-left: 10px solid transparent;
+	border-right: 10px solid transparent;
+	border-top: 10px solid black;
+}
+.liSimilarValue[data-show_value='hide']:before {
+	/* Arrow right */
+	width: 0; 
+	height: 0; 
+	border-top: 10px solid transparent;
+	border-bottom: 10px solid transparent;
+	border-left: 10px solid black;
+}
+.liSimilarValue {
+	color: blue;
+	font-style: italic;
+	cursor: pointer;
+}
+.liSimilarValue:hover {
+	text-decoration: underline;
+}
+
 .swtDepiction {
 	width: 20%;
 	/* height: 200px; */

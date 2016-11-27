@@ -1,0 +1,14 @@
+{
+  "name": "swt_chrome_extension",
+  "version": "1.0.0",
+  "description": "SWTChromeExtension",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Oliver Frendo",
+  "license": "MIT",
+  "dependencies": {
+    "jaccard": "^0.4.0"
+  }
+}
