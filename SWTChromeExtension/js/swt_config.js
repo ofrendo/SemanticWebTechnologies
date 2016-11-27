@@ -8,9 +8,9 @@ var CONFIG = {
 		"http://webprotege.stanford.edu/geoPoint": "Coordinates",
 		"http://webprotege.stanford.edu/birthYear": "Birth year",
 		"http://webprotege.stanford.edu/networth": "Net worth",
-    "http://webprotege.stanford.edu/population": "Population",
-    "http://webprotege.stanford.edu/education", "Education",
-    "http://webprotege.stanford.edu/seeAlso", "See also"
+	    "http://webprotege.stanford.edu/population": "Population",
+	    "http://webprotege.stanford.edu/education": "Education",
+	    "http://webprotege.stanford.edu/seeAlso": "See also"
 	},
 	USE_SELECTED_TEXT: null //"Michael Gove, Iain Duncan Smith and Theresa Villier are among her backers."
 };
