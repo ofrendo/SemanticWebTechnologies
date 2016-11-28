@@ -92,6 +92,7 @@ var SWT_Visualizer = (function() {
 		          .on("drag", dragged)
 		          .on("end", dragended))*/;
 
+		// Append title
 		node.append("title")
 		    .text(function(d) { 
 		    	return (d.id.indexOf("__") >= 0) ? 
@@ -200,9 +201,62 @@ var SWT_Visualizer = (function() {
 
 		function zoomed() {
 			//console.log("Zoomed");
+			if (d3.event.sourceEvent) {
+				d3.event.sourceEvent.preventDefault();
+				d3.event.sourceEvent.stopPropagation();
+			}
+			container.attr("transform", d3.event.transform);
+		}
+
+		var drag = d3.drag() 
+			.on("start", dragStart)
+			.on("drag", dragged);
+
+		node.call(drag);
+		nodeText.call(drag);
+
+		function dragStart(d) {
 			d3.event.sourceEvent.preventDefault();
 			d3.event.sourceEvent.stopPropagation();
-			container.attr("transform", d3.event.transform);
+			//console.log("dragStart: " + this);
+		}
+
+		function dragged(d) {
+			d3.event.sourceEvent.preventDefault();
+			d3.event.sourceEvent.stopPropagation();
+			
+			// Find both elements (text and circle) that
+			var x;
+			var y; 
+			if (this.tagName === "circle") {
+				//console.log(this);
+				//console.log(this.getAttribute("cx"));
+				x = parseFloat(this.getAttribute("cx"));
+				y = parseFloat(this.getAttribute("cy"));
+			}
+			else if (this.tagName === "text") {
+				x = parseFloat(this.getAttribute("x"));
+				y = parseFloat(this.getAttribute("y")) - 3;
+			}
+
+			var coords = d3.mouse(this);
+			var newX = coords[0]; //d3.event.x;
+			var newY = coords[1]; //d3.event.y;
+			//console.log(d3.event);
+			//console.log(d3.mouse(this));
+
+			console.log("drag: " + this + ", x=" + x + ", y=" + y + ", newX=" + newX + ", newY=" + newY);
+
+			d3.select("circle[cx='" + x + "'][cy='" + y + "']").attr("cx", newX).attr("cy", newY).attr("x", newX).attr("y", newY);
+			
+			var text = d3.select("text[x='" + x + "'][y='" + (y+3) + "']");
+			text.attr("x", newX).attr("y", newY+3);
+			var children = text.node().childNodes;
+			d3.selectAll(children).attr("x", newX); //.("tspan[x='" + x + "']")
+			d3.selectAll("line[x1='" + x + "'][y1='" + y + "']").attr("x1", newX).attr("y1", newY);
+			d3.selectAll("line[x2='" + x + "'][y2='" + y + "']").attr("x2", newX).attr("y2", newY);
+
+			//d3.select(this).attr("fx", d.x = d3.event.x).attr("fy", d.y = d3.event.y);
 		}
 
 	}

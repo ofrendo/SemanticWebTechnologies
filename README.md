@@ -11,7 +11,14 @@ Bodies are in JSON.
 POST https://localhost:8443/RetrieveTriples
 
 Request body:
-This is a test to identify SAP in Walldorf with H. Plattner as founder.
+{
+  "options": {
+    "Organization": ["309789491", "165884424", "1524249358"],
+    "Person": [],
+    "Location: []
+  },
+  "input": "This is a test to identify SAP in Walldorf with H. Plattner as founder."
+}
 
 Response body: 
 {
