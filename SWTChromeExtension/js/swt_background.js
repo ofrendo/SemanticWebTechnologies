@@ -134,6 +134,7 @@
 					var li = (highestSim < CONFIG.MIN_SIM) ? 
 								buildOriginalAttributeLi(propertyName, val) : 
 								buildSimilarAttributeLi(propertyName, val, highestSim);
+					li.classList.add("swtLi");
 					ul.appendChild(li);
 				}
 			}

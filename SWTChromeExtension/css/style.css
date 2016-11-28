@@ -6,7 +6,7 @@
 	padding: 5px;
 }
 #swtDivSearch > button {
-	padding: 5px;
+	padding: 5px !important;;
 }
 
 #swtDivOverlay {
@@ -32,6 +32,8 @@
 	padding: 5px;
 	overflow-y: auto;
 	font-family: verdana, arial, helvetica, sans-serif;
+
+	padding-top: 40px;
 }
 #swtDivPopup > h3 {
 
@@ -53,13 +55,15 @@
 	margin-bottom: 30px;
 }
 #swtDivPopup ul {
-	margin: 0;
+	margin: 0 !important;
 	/*padding: 5px;*/
 	float: left;
-	width: 70%;
+	width: 70% !important;
 }
-#swtDivPopup li {
+#swtDivPopup .swtLi {
 	list-style: disc !important;
+	font-size: 12px !important;
+	margin-left: 20px !important;
 }
 
 
@@ -97,8 +101,8 @@
 
 #swtButtonClosePopup {
 	position: absolute;
-	right: 5px;
-	top: 5px;
+	right: 5px !important;;
+	top: 5px !important;;
 }
 
 

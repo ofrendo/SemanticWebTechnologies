@@ -1,7 +1,23 @@
 \section{Known limitations}
 In which domains does the application not work? 
+- other languages
+
+
+
 Are there queries which cannot be answered? – Why? 
+- queries with too many entities (i.e. long text): waiting time very high
+- memory limitations
+
+
+
+
+
 
 How could you overcome those limitations, given more time?
+- Cache commonly requested entities locally (in a TBA)
+- Another limitation: self signed certificate. Given more time: Instead of running the server locally, host the server on the internet and set up a domain redirecting to the IP adress of the server and buying/setting up a secure certificate for the domain
+
 
 We could mention papers describing techniques which could improve certain areas like LINDA \cite{boehm_linda:_2012} for entity matching. 
+
+

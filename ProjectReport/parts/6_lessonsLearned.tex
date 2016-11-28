@@ -5,10 +5,19 @@ Which challenges did you face?
 - Rejected queries
 - no sameAs definitions between data sets
 
+- setting up a Chrome extension that is reusable on every website. Injecting HTML on every site is straightforward but ensuring that it looks the same is more challenging because each website has its own CSS rules
+
 
 What were the biggest obstacles?
 - finding active and stable public SPARQL endpoints
 
+- finding a good way to visualize connections between entities: conceptually and technically
+
 
 What would you do differently next time?
 - using local sources
+
+- use a different method for the chrome extension: instead of injecting HTML, use popups \footnote{\url{https://developer.chrome.com/extensions/browserAction\#popups}} for display
+- that way the extension looks the same on every website because it is independent of it
+- the downside to this is that the user must copy and paste the text into a box in the popup because the popup is unable to access any marked text on the website
+
