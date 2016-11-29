@@ -52,11 +52,13 @@ After identifying the named entity and its entity type these information are han
 \end{figure}
 
 \paragraph{Querying Sources}
-All sources are queried the same way via class QuerySource as illustrated in Figure \ref{fig:details_query} on the right hand side. Source queries could be generalized since the only differences are the endpoint URLs and entity type URIs as described before. In order to derive properties and context of a source based on the names and types of the entities, multiple queries are executed in two steps.
+All sources are queried the same way via class QuerySource as illustrated in Figure \ref{fig:details_query} on the right hand side. Source queries are generalized since the only differences are the endpoint URLs and entity type URIs as described before. In order to derive properties and context of a source based on the names and types of the entities, multiple queries are executed in two steps.
 
 First step is the identification of URI candidates by performing a reg-ex based search per identified entity in the context. These queries run in parallel so the system can handle multiple entities without significant increase in runtime. Technically multiple \textit{SELECT-Queries} are executed, as shown in Figure \ref{fig:details_query}. The results of these first queries are URIs which meet the type definition and the reg-ex. The reg-ex allows up to 10 characters before and after the identified name and a period is replaces with ".*" to allow a match with shortened names. In cases there are too many matches (currently the threshold is five), an extended logic is used to reduce the amount of URI candidates. 
 
-The approach for URI selection is based on a score which is calculated for each URI by multiplying a \textit{relation score} and the normalized edit distance of the URI label and the entity name. Therefore the source queries provide a count of relations available per URI. This information is used to calculate the \textit{relation score}, which is a relative score, being 1 for the URI with the most relations. The top five URIs with the highest score are selected. Less URIs are selected if there are not enough URIs having at least a score value of at least 75\% of the highest score value.
+The extended logic for URI selection is based on a score which is calculated for each URI by multiplying a \textit{relation score} and the normalized edit distance of the URI label and the entity name. Therefore the source queries provide a count of relations available per URI. This information is used to calculate the \textit{relation score}, which is a relative score, being 1 for the URI with the most relations. The top five URIs with the highest score are selected. Less URIs are selected if there are not enough URIs having at least a score value of at least 75\% of the highest score value.
+
+Since this URI identification process is the most expensive in the whole process, a cache was introduced which stores  the labels per source and entity type for which URIs were already derived. So in case a label appears a second time for the same source and entity type, the cached URIs are reused instead of running queries again.
 
 In a second step the identified URI candidates are used to query the source specific context. So all properties are queried as well as direct and in-direct relations between the entities. Furthermore the labels of all elements are derived as well as OWL \textit{sameAs} relations. 
 This last query is a \textit{Construct-Query} and therefore returns a model which is the result of the source queries, as shown in Figure \ref{fig:details_query}. 
@@ -65,8 +67,9 @@ This last query is a \textit{Construct-Query} and therefore returns a model whic
 After all source queries are finished the derived models are added to the same local model, as illustrated in Figure \ref{fig:details_query} on the left hand side. This model is combined with an own ontology defined for this project. This own ontology mainly consists of OWL \textit{euivelantProperty} definitions for own properties which group the corresponding sources specific properties. Furthermore there is a mapping of own classes representing the entity types to the corresponding source specific class definitions of the entities. Therefore the OWL \textit{equivalentClass} property is used. For inference the \textit{OWLMicroReasoner} is used. More complex OWL reasoner need much more time, so they are not used for performance reasons. 
 
 Before the properties are derived from this inferred model, one URI per entity is derived across sources. The one with most relations is chosen. 
-For these URIs the properties are then queried based on the own ontology and returned as result. If there are multiple result values for a property all values are returned. If the same value occurs multiple times for the same property, a count is increased. For numeric values additional logic is applied to ensure proper formatting and unit references. All property values including a language tag which is not empty nor English are discarded.
+For these URIs the properties are then queried based on the own ontology and returned as result. If there are multiple result values for a property all values are returned. If the same value occurs multiple times for the same property, a count is increased. For numeric values additional logic is applied to ensure proper formatting and unit references. All property values including a language tag which is not empty nor English are discarded in order to prevent the texts being shown in multiple languages. As defined before the application is English only. 
 
+Furthermore the result context in terms of direct and indirect relations between the entities is returned as well. For the context the original relations are used with there labels, which is outlined in \ref{fig:details_query}. So relations are returned as well, which are not specified in the own ontology. 
 
 \subsection{Server} 
 \label{sec:server}
@@ -92,8 +95,6 @@ The Chrome extension handles communication to and from the server and shows the 
 
 \paragraph{Loading triples}
 If the user has marked any text on the website this is used as input for the second API call. After the HTTP request has finished loading a popup showing the results is generated and injected into the website. A section is built for each entity showing the triples that were retrieved. Any duplicates are removed. Values with the same relation type (e.g. \textit{abstract}) are compared to each other with the Jaccard similarity measure. If the similarity crosses a threshold the values are hidden as similar attributes. The user can view the attributes by clicking on them if he wishes to. We treated further methods of data fusion, such as trying out other similarity measures, as out of scope, as described in the project outline. 
-
-
 
 
 \paragraph{Options}

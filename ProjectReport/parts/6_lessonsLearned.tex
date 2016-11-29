@@ -1,17 +1,36 @@
 \section{Lessons learned}
+During this project we failed often but early and learned therefore a lot... (omg... hab ich das gerade echt geschrieben?)
+
+\subsection{Working with SPARQL Endpoints}
+From the lectures all sound well defined even though a bit tricky because of different way to express the same knowledge. But it turned ou that the trouble starts much earlier with the SPARQL endpoints themselves.  DBPedia was a good starting point even though it is sometimes no available or slow. So well functioning and known public endpoints are quite occupied. So a reasonable mechanism of these endpoints is to reject execution of queries if the estimated runtime is too long. However, it was very interesting to play around with the SPARQL explorer and learn in this way how to use SPARQL and its limitations. Some times the query just needed to be reformulated a bit such that the query could be optimized better\footnote{as describe at \url{https://github.com/openlink/virtuoso-opensource/issues/28}}.
+
+As described before the URI identification turned out to be the most expensive part so these queries were formulated as efficient as possible and executed in parallel. As soon as URIs are identified more complex queries are possible. That makes sense since the regex-based search of URIs requires parsing a lot of labels. In contrast URIs could be accessed directly if indexed properly. So formulating the queries for URI search in a way which is not rejected by the endpoint and is as performant as possible, was one of the biggest obstacles. In this context some fine tuning was necessary as well in order to optimize the matches of the regex-pattern and special handling  for example of locations because they often contain further region information like ``Rochester, New York''. That was solved with the previously described extended logic including a similarity score for URI labels. Encoding this into SPARQL was simply not possible.
+
+Furthermore many SPARQL enpoints are not active anymore or do not support SPARQL 1.1 which we used. So searching for potentially useful SPARQL endpoints was focused on technically aspects first. As described before  multiple endpoints have been integrated. But some turned out to be not really useful like the ones hosted by the UK government services. They have no OWL \textit{sameAs} definitions and therefore could not be matched.
+
+\subsection{Chrome Extension}
 Which challenges did you face?
-- Named Entity Identification as URI
-- Performance
-- Rejected queries
-- no sameAs definitions between data sets
+- Named Entity Identification as URI[DONE]
+- Performance[DONE]
+- Rejected queries[DONE]
+- no sameAs definitions between data sets[DONE]
 
 - setting up a Chrome extension that is reusable on every website. Injecting HTML on every site is straightforward but ensuring that it looks the same is more challenging because each website has its own CSS rules
 
 
 What were the biggest obstacles?
-- finding active and stable public SPARQL endpoints
+- finding active and stable public SPARQL endpoints [DONE]
 
 - finding a good way to visualize connections between entities: conceptually and technically
+
+
+\subsection{Potential Improvements and Outlook}
+For a productive solution hosting the datasets and using them via private SPARQL endpoints would be necessary in order to offer a stable service. That should not only improve stability but runtime as well. Scalability of the application should be quite good, since the most expensive part is already cached. 
+In order to stay flexible the integration of external/public services should still be possible. But the process should be adapted in order to minimize runtime impact of slow sources, as this is a limitation describe in section \ref{sec:Limits}. This could be solved by providing partial results to the end-user which are updated while the query processes are ongoing. A good example for such an approach is \url{http://factforge.net/relfinder}. Furthermore the ability to specify sources to be queried could be integrated in the customizing for the end user in order to allow manual (temporary) disabling of certain sources. 
+
+Furthermore the links between datasets in terms of OWL \textit{sameAs} definitions could be enriched by performing entity matching across sources like LINDA~\cite{boehm_linda:_2012} does. Since this process needs to run automated it could also be a potential source of failure. 
+
+Another aspect is the extensibility. The own ontology is already customizable via an ontology file. But the source specification is at the moment hard coded which could be easily exchanged with configuration via a configuration file defining the endpoint and the specific entity type URIs. 
 
 
 What would you do differently next time?
