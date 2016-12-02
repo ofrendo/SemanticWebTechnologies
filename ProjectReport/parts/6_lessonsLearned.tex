@@ -9,10 +9,9 @@ Furthermore many SPARQL endpoints are not active anymore or do not support SPARQ
 \subsection{Chrome Extension}
 One of the challenges for the Chrome extension was implementing it to be reusable on every website. Injecting HTML on every site is straightforward but ensuring that it looks the same is more challenging because each website has its own CSS rules.
 
-A solution for this could be to use a different method for the chrome extension. Instead of injecting HTML popups \footnote{\url{https://developer.chrome.com/extensions/browserAction\#popups}} could be used for display. This way the extension has the same look and feel on every website because it is independent of it. The downside of this is that a connection between the popup and the website the user is currently on could be hard or impossible to implement. A workaround could be for the user to copy and paste input text into a box in the popup. 
+A solution for this could be to use a different method for the chrome extension. Instead of injecting HTML popups \footnote{\url{https://developer.chrome.com/extensions/browserAction\#popups}} could be used for display. This way the extension has the same look and feel on every website because it is independent of it. The downside of this is that a connection between the popup and the website the user is currently on could be hard to implement. A workaround could be for the user to copy and paste input text into a box in the popup. 
 
 Another issue was finding a good way to visualize connections between entities, conceptually as well as technically. It was decided that implementing a visualization of the graph within the application was too time consuming, which was why d3.js was used to create the visualization.
-%OLLI: Vielleicht noch beschreiben, warum dieser Button sein muss? Wie gesagt, bei anderen Plugins scheint es ja einen Weg zu geben. Wäre mit dem impossible auf jeden Fall sehr vorsichtig ;)
 
 
 

@@ -101,8 +101,8 @@ Furthermore the result context in terms of direct and indirect relations of firs
 
 \subsection{Server} 
 \label{sec:server}
-%OLLI: technical terms with textit{GET /RetrieveAvailableProperties}? Reference to Github: Maybe just Referencing to Repository (like in footnote 3 for OWL file)? So we can specify Repository link in one place or send it via mail. Maybe qualified cite instead of link for heroku? Or did I cite too much?
-The server's role in the application is to act as middleware between the frontend and the components that generate and handle SPARQL queries. It implements a REST API with two calls: GET /RetrieveAvailableProperties and POST /RetrieveTriples. All inputs and outputs are communicated via JSON. The first call is used by the frontend to allow the user to view which attributes are available. The second call retrieves a set of triples for a given text. Examples for both can be viewed in \texttt{README.md}\footnote{\url{https://github.com/ofrendo/SemanticWebTechnologies/}}. 
+%Olli
+The server's role in the application is to act as middleware between the frontend and the components that generate and handle SPARQL queries. It implements a REST API with two calls: \textit{GET /RetrieveAvailableProperties} and \textit{POST /RetrieveTriples}. All inputs and outputs are communicated via JSON. The first call is used by the frontend to allow the user to view which attributes are available. The second call retrieves a set of triples for a given text. Examples for both can be viewed in \texttt{README.md}\footnote{Stored in the repository root.}. 
 
 Lastly, the server must implement HTTPS. This is because the user may view websites available only over HTTPS and browsers do not allow mixed content, i.e. loading resources over HTTP on an HTTPS website \cite{ChromeMixedContent}. To achieve this the first idea was to use Heroku for cloud hosting\footnote{\url{https://www.heroku.com/}}. This would ensure that the server is always available and it automatically offers a secure connection. However, it quickly turned out that the server used more memory than was allowed on Heroku (1GB). As such it was decided to use a local server instead. To ensure a secure connection a small server (nginx) with a reverse proxy was used with self signed certificates\cite{nginxReverseProxy}. 
 
@@ -110,7 +110,13 @@ Lastly, the server must implement HTTPS. This is because the user may view websi
 
 
 \subsection{Chrome extension}
-%OLLI: Figure sitzt nicht gut
+
+The Chrome extension handles communication to and from the server and shows the result to the user. It consists mainly of a content script\footnote{\url{https://developer.chrome.com/extensions/content_scripts}}, which is a JavaScript file that is loaded on every website. Upon loading it injects an HTML button that starts the process when clicked. 
+
+\paragraph{Loading triples}
+If the user has marked any text on the website this is used as input for the second API call. After the HTTP request has finished loading a popup showing the results is generated and injected into the website. A section is built for each entity showing the triples that were retrieved. Any duplicates are removed. Values with the same relation type (e.g. \textit{abstract}) are compared to each other with the Jaccard similarity measure. If the similarity crosses a threshold the values are hidden as similar attributes. We chose 0.9 as a conservative value that still shows many similar values (particularily \textit{abstract}). The user can view the attributes by clicking on them if he wishes to. We treated further methods of data fusion, such as trying out other similarity measures, as out of scope, as described in the project outline. 
+
+
 \begin{wrapfigure}{ht}{5.5cm}
   \frame{
 	\includegraphics[width=5.5cm]{img/sampleResults/options} %1\textwidth
@@ -119,19 +125,11 @@ Lastly, the server must implement HTTPS. This is because the user may view websi
   \label{fig:options}
 \end{wrapfigure}
 
-The Chrome extension handles communication to and from the server and shows the result to the user. It consists mainly of a content script\footnote{\url{https://developer.chrome.com/extensions/content_scripts}}, which is a JavaScript file that is loaded on every website. Upon loading it injects an HTML button that starts the process when clicked. 
-
-\paragraph{Loading triples}
-If the user has marked any text on the website this is used as input for the second API call. After the HTTP request has finished loading a popup showing the results is generated and injected into the website. A section is built for each entity showing the triples that were retrieved. Any duplicates are removed. Values with the same relation type (e.g. \textit{abstract}) are compared to each other with the Jaccard similarity measure. If the similarity crosses a threshold the values are hidden as similar attributes. The user can view the attributes by clicking on them if he wishes to. We treated further methods of data fusion, such as trying out other similarity measures, as out of scope, as described in the project outline. 
-
-
 \paragraph{Options}
-The user has the possibility to customize which attributes are retrieved. For this an options page\footnote{\url{https://developer.chrome.com/extensions/options}} was implemented. This page first loads the available properties via GET /RetrieveAvailableProperties and then shows the results to the user (see figure \ref{fig:options}). The user selects the attributes he is interested in and saves them locally. Any subsequent queries send these options along with the input text. Besides allowing the user to customize the application and reducing bandwith another benefit is that it may also improve query execution time. 
-%OLLI: Inhaltlich ist der letzte Teilsatz nicht ganz korrekt: Momentan werden alle möglichen properties je entity abgefragt
-
+The user has the possibility to customize which attributes are retrieved. For this an options page\footnote{\url{https://developer.chrome.com/extensions/options}} was implemented. This page first loads the available properties via GET /RetrieveAvailableProperties and then shows the results to the user (see figure \ref{fig:options}). The user selects the attributes he is interested in and saves them locally. Any subsequent queries send these options along with the input text. This allows the user to customize the application and reduces bandwidth.
 
 \paragraph{Visualization}
-The second API call (POST /RetrieveTriples) retrieves a set of context triples as described in section \ref{sec:sparqlQueries}. These are visualized to show the user the connections between entities. The visualization is generated by D3.js \footnote{\url{https://d3js.org/}} and a force layout. %OLLI: Beim Server sprichst du auch von zwei Calls, wobei der erst für available properties ist und der zweite das Ergebnis liefert - wäre der tripple call dann nicht der 3. call?
+The second API call (\textit{POST /RetrieveTriples}) retrieves the results per named entity and the set of context triples as described in section \ref{sec:sparqlQueries}. These are visualized to show the user the connections between entities. The visualization is generated by D3.js \footnote{\url{https://d3js.org/}} and a force layout. 
 
 
 
