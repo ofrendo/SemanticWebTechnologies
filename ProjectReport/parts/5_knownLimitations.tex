@@ -1,16 +1,17 @@
+\newpage
 \section{Known limitations}
 \label{sec:Limits}
 To begin with, one limitation of the application is that it is restricted to English texts. This is because CoreNLP's English models are used by default. One solution to this would be to first use language detection on any input and to then use the corresponding model. Other languages such as German and Spanish are available for download\footnote{\url{http://nlp.stanford.edu/software/CRF-NER.shtml}}. 
 
-Another limitation depends on the input. If the input contains no named entities then it is impossible for the application to search for additional information. Conversely, the input can contain a large number of entities. In this case the waiting time may be very high, or the server may run out of memory. An improvement to both of these problems would be to cache commonly request entities locally, for example in Jena's TBD\footnote{\url{https://jena.apache.org/documentation/tdb/}}. [SASCHA: We already cache the URIs, only the context is queried each time, which is much more performant -> caching the whole context probably makes no sense. Since the URI search is run in parallel, the count of entities is not an issue (assuming infinite threads and a endpoint accepting many queries in parallel as well)]  
+Another limitation depends on the input. If the input contains no named entities then it is impossible for the application to search for additional information. Conversely, the input can contain a large number of entities. In this case the waiting time may be very high, or the server may run out of memory. A first step towards this problem was the implementation of the source specific URI cache. 
 
 Furthermore the performance depends strongly on the selected sources. To be more precise, the runtime is determined by the slowest source because the results are derived context dependent (e.g. deriving the most relevant URI per entity across sources) and therefore the results are obtained as soon as the context is derived completely from all sources. 
 
 Additionally, the input can contain ambiguous entities. One possibility where this happens is when named entities such as ``Mr. \texttt{\{surname\}}'' are found in the input. In this case many subjects with the surname may be found and the application must rely on scoring URIs as described in section \ref{sec:sparqlQueries}. If a URI candidate is discarded because of a low source specific score, the URI will not be part of the context. That means the correct URI is not present anymore when determining the best URI based on relations in the context. This is because of simplified source queries per entity for URI identification. More complex queries for context dependent URI identification are rejected by the endpoint.
 
-Another aspect is the compatibility with SPARQL 1.0. In order to calculate the URI scoring a count is necessary but could be dropped for SPARQL 1.0 sources, such that the score is based only on edit distance of the label. Potentially further parts need to be adjusted for SPARQL 1.0 as well. 
+Another aspect is the compatibility with SPARQL 1.0. In order to calculate the URI scoring a count is necessary but could be dropped for SPARQL 1.0 sources, such that the \textit{relation score} is always 1. But further parts like the \textit{VALUES}-clause would need to be adjusted or replaced for SPARQL 1.0 as well. 
 
-Lastly, the secure server (nginx, as described in section \ref{sec:server}) uses a self signed certificate. Given more time the server would be hosted on the internet instead of running it locally. A domain could then be set up, for which a secure certificate could be bought or generated. 
+Lastly, the secure server (nginx, as described in section \ref{sec:server}) uses a self signed certificate. Given more time the server would be hosted on the internet, for example on Heroku, instead of running it locally. A domain could then be set up, for which a secure certificate could be bought or generated. 
 
 
 
