@@ -3,7 +3,7 @@
 In order to identify as many named entities as possible with one source we started with the DBpedia dataset \cite{dbpedia_dbpedia_2016}
 using the public data endpoint\footnote{\url{http://dbpedia.org/sparql}} and tested with the corresponding Virtuoso \cite{openlink_software_openlink_2016} SPARQL explorer\footnote{\url{http://dbpedia.org/snorql/}}.
 
-As such a first version of the application was focused on querying DBpedia only. In later versions query generation was refactored such that it can be used for all sources supporting SPARQL 1.1. The technical details are described in the next section. Per source only the endpoint URL as well as the source specific RDF Type URIs for organisations, locations and persons have to be specified, e.g. \textit{http://dbpedia.org/ontology/Organisation} for DBpedia. This information is needed to incorporate the entity type information retrieved from the named entity recognitions and as filter for entity search. The filter serves two purposes: performance is increased because only labels of entities of this type are considered for matching the name and to increase the chance to find the correct entity, assuming that the retrieved entity type is correct. 
+As such a first version of the application was focused on querying DBpedia only. In later versions query generation was refactored such that it can be used for all sources supporting SPARQL 1.1. The technical details are described in the next section. Per source only the endpoint URL as well as the source specific RDF Type URIs for organisations, locations and persons have to be specified, e.g. \textit{http://dbpedia.org/ontology/Organisation} for DBpedia. This information is needed to incorporate the entity type information retrieved from the named entity recognitions and as a filter for the entity search. The filter serves two purposes: Firstly the performance is increased because only labels of entities of this type are considered for matching the name. Secondly the chance to find the correct entity is increased, assuming that the retrieved entity type is correct.
 
 The application offers a configurable set of sources to request entities from as described in table \ref{tab:sources}.
 
@@ -34,7 +34,7 @@ The application offers a configurable set of sources to request entities from as
 	\label{tab:sources}
 \end{table}
 
-Most of the source were identified via a webpage called ''SPARQL Endpoints Status'' \cite{pierre-yves_vandenbussche_sparql_2013}. This website monitors hundreds of SPARQL endpoints, allows the user to filter based on interoperability (SPARQL 1.1) and provides an availability chart. This helped a lot to judge whether or not a endpoint could be usable from a technical point of view. Afterwards the data source was explored by selecting the available RDF types and searching for potentially interesting properties. 
+Most of the source were identified via a webpage called ''SPARQL Endpoints Status'' \cite{pierre-yves_vandenbussche_sparql_2013}. This website monitors hundreds of SPARQL endpoints, allows the user to filter based on interoperability (SPARQL 1.1) and provides an availability chart. This helped to judge whether or not a endpoint could be usable from a technical point of view. Afterwards the data source was explored by selecting the available RDF types and searching for potentially interesting properties. 
 
 
 
