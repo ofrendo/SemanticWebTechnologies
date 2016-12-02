@@ -109,7 +109,7 @@ public class BackgroundQueryExecution extends Thread {
 		QueryExecution qe = QueryExecutionFactory.sparqlService(endpoint, q);
 		QueryEngineHTTP qeHttp = (QueryEngineHTTP) qe;
 		qeHttp.setModelContentType("application/rdf+xml");
-		qeHttp.setTimeout(60, TimeUnit.SECONDS, 60, TimeUnit.SECONDS);
+		qeHttp.setTimeout(30, TimeUnit.SECONDS, 30, TimeUnit.SECONDS);
 		try {
 			ResultSet r = qe.execSelect();
 			while(r.hasNext()) {  

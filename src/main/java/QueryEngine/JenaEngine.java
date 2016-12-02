@@ -644,7 +644,10 @@ public class JenaEngine implements QueryEngine {
 //		text = "Russia is a country as well.";
 //		runtest(text);
 		
-		text = "Russia is a country having a lot relations to Germany or even Syria.";
+//		text = "Russia is a country having a lot relations to Germany or even Syria.";
+//		runtest(text);
+//		
+		text = "Michael Gove, Iain Duncan Smith and Theresa Villier are among her backers.";
 		runtest(text);
 		
 //		//2nd TEST (just hit the cache)
