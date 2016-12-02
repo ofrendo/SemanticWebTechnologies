@@ -29,6 +29,7 @@ public class QuerySource extends Thread{
 	    ,IServe
 	    ,WorldBank
 	    ,YAGO2
+	    ,LOB //Linked Open Beer
 	}
 
 	private static HashMap<String, List<String>> uriCache; 
@@ -119,6 +120,9 @@ public class QuerySource extends Thread{
 		case YAGO2:
 			this.endpoint = "https://linkeddata1.calcul.u-psud.fr/sparql";
 			break;
+		case LOB: 
+			this.endpoint = "http://ec2-52-209-172-100.eu-west-1.compute.amazonaws.com:8890/sparql";
+			break;
 		}
 		
 	}
@@ -200,6 +204,18 @@ public class QuerySource extends Thread{
 				uri = "<http://yago-knowledge.org/resource/wordnet_location_100027167>";
 				break;
 		}
+		case LOB:
+			switch (et) {
+			case ORGANIZATION:
+				uri = "<http://dws.informatik.uni-mannheim.de/swt/linked-open-beer/ontology/Brewery>";
+				break;
+			case PERSON:
+				uri = ""; //none
+				break;
+			case LOCATION:
+				uri = ""; //none
+				break;
+		}			
 		break;
 		default:  //Default is DBPedia, DBPediaLive, FactForge, 
 			switch (et) {
@@ -227,7 +243,7 @@ public class QuerySource extends Thread{
 		List<String> uri_candidates = new ArrayList<String>();
 		
 		// --- A) Per NamedEntity: Query for URI candidates ---
-		ThreadGroup group = new ThreadGroup( String.valueOf(entities.toString().hashCode()));
+		ThreadGroup group = new ThreadGroup( source + "_" +  String.valueOf(entities.toString().hashCode()));
 		boolean runQuery = false; 
 		for (NamedEntity ne : entities) {
 			if(uriCache.containsKey(getCacheRef(ne))){
@@ -245,13 +261,13 @@ public class QuerySource extends Thread{
 //							+ " }"
 //							; 
 //				}else{
-					queryString = "SELECT DISTINCT ?s ?label (COUNT(?p) AS ?count) WHERE {"
+					queryString = "SELECT DISTINCT ?s (STR(?l) as ?label) (COUNT(?p) AS ?count) WHERE {"
 							+ " ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " + determineEntityTypeURI(source, ne.getType()) + "."
 							+ " ?s <http://www.w3.org/2000/01/rdf-schema#label>  ?l."
 							+ " ?s ?p ?o."
 							+ " FILTER ((LANG(?l) = '' || LANGMATCHES(LANG(?l), 'en')) && isURI(?s) && regex(?l,'" + ne.getRegexName() + "') )"
-							+ " BIND (STR(?l) as ?label)"// BIND (COUNT(?p) as ?count)"
-							+ " } GROUP BY ?s ?label"
+//							+ " BIND (STR(?l) as ?label)"// BIND (COUNT(?p) as ?count)"
+							+ " } GROUP BY ?s ?l"
 							; 
 //				}
 				runQuery = true;
@@ -472,20 +488,4 @@ public class QuerySource extends Thread{
 
 	    return (longerLength - StringUtils.getLevenshteinDistance(longer, shorter)) / (double) longerLength; 
 	  }
-
-		
-	
-	// #################################### TEST SECTION #################################################
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		System.out.println(String.valueOf(Math.abs("ztewfavbdhjsfd ndsfvg<hjkdölmf".hashCode())));
-		System.out.println(String.format("%,.2f",Double.parseDouble("185000000.00")));
-		String str = "012345789";
-		System.out.println(str.substring(0,5));
-		System.out.println(str.substring(0, 20));
-		
-	}
 }
