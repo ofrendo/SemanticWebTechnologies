@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	
 	"name": "SWT Chrome Extension",
-	"description": "*://www.bbc.com/*",
+	"description": "Automatic entity annotation for websites",
 	"version": "0.0.1",
 	
 	"options_page": "options.html",

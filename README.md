@@ -1,10 +1,35 @@
-# SemanticWebTechnologies
-Report for our 3rd semester SWT project
+# Entity Annotation
+Report for our 3rd semester Semantic Web Technologies project
 
-## Installation instructions for the Chrome extension
+## Installation instructions 
+### Server
+The server is a Maven project. To compile a runnable .jar file, execute
+```
+mvn package 
+```
+in the project root folder. To start the server, run `startServerLocally.sh`.
 
-## Server
-Bodies are in JSON.
+
+
+### Chrome extension
+To install the Chrome extension execute the following steps:
+- Navigate to chrome://extensions/ (in Google Chrome)
+- Make sure the "Developer mode" checkbox is ticked
+- Click "Load unpackaged extension...", navigate to the `/SWTChromeExtension` folder and click OK
+
+
+### Using the extension
+To use the Chrome extension, first make sure the server is running. Then start the nginx server (`/nginx-1.10.2/nginx.exe`), which is responsible for creating HTTPS connections. Then navigate to 
+```
+https://localhost:8443/RetrieveAvailableProperties
+```
+to make sure everything is running. Chrome may show a warning about an insecure website, which is expected because the application uses self signed certificates. 
+
+If the above request works, the extension is set up! Now navigate to any website. Mark some text and then look for a button named `Search for entities` in the top right. Click it and wait for a popup to show with the results. The first request may take a while (between 30s and a minute) because the CoreNLP models need to be loaded. 
+
+
+## Server REST API documentation
+All bodies are in JSON.
 
 ### Get triples for a text
 ```
