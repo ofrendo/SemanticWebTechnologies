@@ -104,6 +104,7 @@ public class JenaEngine implements QueryEngine {
 			sources.add(QuerySource.Source.IServe);
 //			sources.add(QuerySource.Source.WorldBank); //No rdfs:label! Instead http://www.w3.org/2004/02/skos/core#prefLabel
 			sources.add(QuerySource.Source.YAGO2);
+//			sources.add(QuerySource.Source.LOB); //SPARQL 1.0 (virtuoso 6.1.3)!  
 		}
 		
 		//add copies of entities to ensure that list cannot be change from outside
@@ -183,7 +184,7 @@ public class JenaEngine implements QueryEngine {
 		try {
 //			QuerySource[] threads = new QuerySource[group.activeCount()];
 			QuerySource[] threads = new QuerySource[sources.size()];
-			group.enumerate(threads);
+			group.enumerate(threads, false);
 			for (int i = 0; i < threads.length; i++) {
 				if(threads[i] != null){
 					threads[i].join();
@@ -647,7 +648,10 @@ public class JenaEngine implements QueryEngine {
 //		text = "Russia is a country having a lot relations to Germany or even Syria.";
 //		runtest(text);
 //		
-		text = "Michael Gove, Iain Duncan Smith and Theresa Villier are among her backers.";
+//		text = "Michael Gove, Iain Duncan Smith and Theresa Villier are among her backers.";
+//		runtest(text);
+		
+		text = "Is the Rossland Beer Company  producing beer?";
 		runtest(text);
 		
 //		//2nd TEST (just hit the cache)

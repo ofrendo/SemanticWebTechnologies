@@ -1,10 +1,12 @@
+\newpage
 \section{Lessons learned}
 \subsection{Working with SPARQL Endpoints}
-One of the main obstacles was working with different SPARQL endpoints, because they use different ways to express the same knowledge. Often, the SPARQL endpoints themselves were a source of trouble. DBpedia was a good starting point even though it is sometimes not available or slow. Well functioning and known public endpoints are quite occupied. As such a reasonable mechanism of these endpoints is to reject execution of queries if the estimated runtime is too long. However, it was interesting to play around with the SPARQL explorer and learn in this way how to use SPARQL and its limitations. Sometimes the query needed to be reformulated such that the query could be optimized better\footnote{as describe at \url{https://github.com/openlink/virtuoso-opensource/issues/28}}.
+One of the main obstacles was working with different SPARQL endpoints, because they use different ways to express the same knowledge. Often, the SPARQL endpoints themselves were a source of trouble. DBpedia was a good starting point even though it is sometimes not available or slow. Well functioning and known public endpoints are usually busy. As such a reasonable mechanism of these endpoints is to reject execution of queries if the estimated runtime is too long. However, it was interesting to play around with the SPARQL explorer and learn in this way how to use SPARQL and its limitations. Sometimes the query needed to be reformulated such that the query could be optimized better\footnote{as describe at \url{https://github.com/openlink/virtuoso-opensource/issues/28}}.
 
 As described in section \ref{sec:sparqlQueries} the URI identification turned out to be the most expensive part. Because of this  these queries were formulated to be as efficient as possible and to be executed in parallel. As soon as the URIs are identified more complex queries are possible. This makes sense since the regex-based search of URIs requires parsing a large set of labels. In contrast URIs could be accessed directly if indexed properly. This means formulating the queries for URI search in a way which is not rejected by the endpoint and is as performant as possible was one of the biggest obstacles. In this context some fine tuning was necessary as well in order to optimize the matches of the regex-pattern and special handling for example of locations because they often contain further region information like ``Rochester, New York''. This was solved with the previously described extended logic including a similarity score for URI labels. Incorporating this logic into SPARQL queries was not possible, because of complexity. 
 
 Furthermore many SPARQL endpoints are not active anymore or do not support SPARQL 1.1. As such searching for potentially useful SPARQL endpoints was focused on technical aspects first. As described in section \ref{sec:datasets} multiple endpoints have been integrated. But some turned out to not be useful, for example the ones hosted by the UK government services. These sources do not contain OWL \textit{sameAs} definitions and therefore could not be matched.
+
 
 \subsection{Chrome Extension}
 One of the challenges for the Chrome extension was implementing it to be reusable on every website. Injecting HTML and JavaScript on every site is straightforward but ensuring that it looks the same is more challenging because each website has its own CSS rules.
@@ -12,8 +14,6 @@ One of the challenges for the Chrome extension was implementing it to be reusabl
 A solution for this could be to use a different method for the chrome extension. Instead of injecting HTML popups\footnote{\url{https://developer.chrome.com/extensions/browserAction\#popups}} could be used for display. This way the extension has the same look and feel on every website because it is independent of it. The downside of this is that a connection between the popup and the website the user is currently on could be hard to implement. A workaround could be for the user to copy and paste input text into a box in the popup. 
 
 Another issue was finding a good way to visualize connections between entities, conceptually as well as technically. It was decided that implementing a visualization of the graph within the application was too time consuming, which was why d3.js was used to create the visualization.
-
-
 
 
 \subsection{Potential Improvements and Outlook}
