@@ -54,7 +54,7 @@
 		var svgVisualization = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		svgVisualization.setAttribute("width", divContainer.offsetWidth-5);
 		//svgVisualization.setAttribute("width", 700);
-		svgVisualization.setAttribute("height", 800);
+		svgVisualization.setAttribute("height", 600);
 		svgVisualization.id = "swtSVGVisualization";
 		divContainer.appendChild(svgVisualization);
 

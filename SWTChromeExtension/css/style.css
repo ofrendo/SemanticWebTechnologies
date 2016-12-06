@@ -25,9 +25,9 @@
 	top: 20px;
 	right: 20px;
 	z-index: 999;
-	width: 40%;
+	width: 35%;
 	min-width: 500px;
-	height: 900px;
+	height: 650px;
 	background-color: white;
 	padding: 5px;
 	overflow-y: auto;
@@ -100,9 +100,9 @@
 
 
 #swtButtonClosePopup {
-	position: absolute;
-	right: 5px !important;;
-	top: 5px !important;;
+	position: fixed;
+	right: 40px !important;
+	top: 25px !important;
 }
 
 

@@ -97,7 +97,8 @@ public class CoreNLPEngine implements NEREngine {
               // "Indian Prime Minister Narendra Modi tweeted: \"Anguished beyond words on the loss of lives due to the derailing of the Patna-Indore express. My thoughts are with the bereaved families.\"" --> IndianNarendra Modi
               
               if (currNeToken.equals("O") || currNeToken.equals("NUMBER") || currNeToken.equals("MISC") 
-            		  || currNeToken.equals("DATE")) {
+            		  || currNeToken.equals("DATE") || currNeToken.equals("TIME") || currNeToken.equals("ORDINAL")
+            		  || currNeToken.equals("MONEY")) {
                 // LOG.debug("Skipping '{}' classified as {}", word, currNeToken);
                 if (!prevNeToken.equals("O") && (sb.length() > 0)) {
                   handleEntity(prevNeToken, sb, tokens);
