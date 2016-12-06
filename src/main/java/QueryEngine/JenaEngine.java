@@ -103,7 +103,7 @@ public class JenaEngine implements QueryEngine {
 //			sources.add(QuerySource.Source.DataGovUk); //only internal references... nothing we can use
 			sources.add(QuerySource.Source.IServe);
 //			sources.add(QuerySource.Source.WorldBank); //No rdfs:label! Instead http://www.w3.org/2004/02/skos/core#prefLabel
-			sources.add(QuerySource.Source.YAGO2);
+//			sources.add(QuerySource.Source.YAGO2); //by far slower as DBPedia
 //			sources.add(QuerySource.Source.LOB); //SPARQL 1.0 (virtuoso 6.1.3)!  
 		}
 		
